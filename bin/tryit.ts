@@ -1,17 +1,29 @@
 #!/usr/bin/env -S deno --unstable run
 
-import { signals, tty, util, term } from "../lib/deps.ts";
+import {
+  clearScreen,
+  clearScreenSync,
+  goHome,
+  goHomeSync,
+  goTo,
+  hideCursorSync,
+  showCursorSync,
+  write,
+} from "../lib/deps.ts";
+import { intercept } from "../lib/signals.ts";
+import { colorBg, colorFg, Intensity } from "../lib/term.ts";
+import { sleep } from "../lib/util.ts";
 
-signals.intercept();
+intercept();
 self.addEventListener("unload", (_e: Event) => {
-  tty.showCursorSync();
-  tty.clearScreenSync();
-  tty.goHomeSync();
+  showCursorSync();
+  clearScreenSync();
+  goHomeSync();
 });
 
-tty.hideCursorSync();
+hideCursorSync();
 
-await tty.clearScreen();
+await clearScreen();
 
 let [x, y, dx, dy] = [1, 1, 1, 1];
 
@@ -25,24 +37,24 @@ while (true) {
   if (x >= columns) dx = -1;
   if (y >= rows) dy = -1;
 
-  await tty.goTo(x, y, Deno.stdout);
-  await tty.write(".", Deno.stdout);
+  await goTo(x, y, Deno.stdout);
+  await write(".", Deno.stdout);
 
   x = x + dx;
   y = y + dy;
 
-  await tty.goTo(x, y, Deno.stdout);
+  await goTo(x, y, Deno.stdout);
 
-  await term.colorFg(count % 8, term.Intensity.Bright);
-  await term.colorBg( (count + 4) % 8);
-  await tty.write("@", Deno.stdout);
+  await colorFg(count % 8, Intensity.Bright);
+  await colorBg((count + 4) % 8);
+  await write("@", Deno.stdout);
 
-  await tty.goHome();
+  await goHome();
   //await tty.clearLine();
 
-  await tty.write(`${x}:${y}     `, Deno.stdout);
+  await write(`${x}:${y}     `, Deno.stdout);
 
-  await util.sleep(20);
+  await sleep(20);
 
   count += 1;
 }
