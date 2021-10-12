@@ -6,8 +6,8 @@ export function setup(): void {
   intercept();
   self.addEventListener("unload", (_e: Event) => {
     showCursorSync();
-    clearScreenSync();
-    goHomeSync();
+    //clearScreenSync();
+    //goHomeSync();
     resetSync();
   });
 }
