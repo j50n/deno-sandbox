@@ -1,0 +1,40 @@
+#!/bin/bash
+
+set -e
+
+###############################################################################
+# strip - strips the symbols from an executable, making it smaller
+# upx - compresses an executable
+#
+# upx won't work for the deno compiled executables, but it works fine for
+# the deno executable. This means we likely aren't compressing the Javascript
+# bundle of our program. 
+#
+# The idea here is to copy deno from where ever it lives, strip it, upx it,
+# and then use that executable to compile, reducing the size of the compiled
+# bundle to about the size of deno plus Javascript source.
+#
+# Prerequisites:
+#   deno is installed (recommend --release build if you build from source)
+#   apt install build-essential upx-ucl
+
+mkdir -p ./build
+if [[ ! -f ./build/deno ]]; then
+    # The upx part of this can take a long time depending on settings, so cache it.
+    # I like to copy the deno executable rather than smash in place because this
+    #    process is fragile. Minor changes to strip or upx can break deno.
+
+    cp "$(which deno)" ./build/deno
+    ls -lah build/
+    strip --strip-all ./build/deno
+
+    upx -9 ./build/deno
+    # upx ./build/deno
+fi
+
+echo "here"
+rm -f ./build/punchin
+./build/deno compile --unstable --allow-run=figlet,toilet --output ./build/punchin ./bin/punchin.ts
+
+chmod 755 ./build/punchin
+ls -lah ./build/
