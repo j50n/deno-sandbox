@@ -32,7 +32,6 @@ if [[ ! -f ./build/deno ]]; then
     # upx ./build/deno
 fi
 
-echo "here"
 rm -f ./build/punchin
 ./build/deno compile --unstable --allow-run=figlet,toilet --output ./build/punchin ./bin/punchin.ts
 

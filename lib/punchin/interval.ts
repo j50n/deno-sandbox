@@ -8,7 +8,6 @@ export function format(seconds: number): string {
   }
 
   const sint = Math.floor(seconds);
-  const s = sint % 60;
   const mint = Math.floor(sint / 60);
   const m = mint % 60;
   const hint = Math.floor(mint / 60);

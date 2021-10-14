@@ -1,4 +1,4 @@
-import { clearScreenSync, goHomeSync, showCursorSync } from "../deps.ts";
+import { showCursorSync } from "../deps.ts";
 import { intercept } from "../signals.ts";
 import { resetSync } from "../term.ts";
 

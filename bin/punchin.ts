@@ -28,7 +28,7 @@ async function refreshDisplay(): Promise<void> {
       console.log(await figlet("On a Break", "bigmono12", true));
     } else {
       console.log(await figlet(timeWorkedDisplay, "bigmono12", true));
-      if(totalTimeSoFar / (60 *60 * 1000) >= 8 ){
+      if (totalTimeSoFar / (60 * 60 * 1000) >= 8) {
         console.log(await figlet("ACHIEVEMENT UNLOCKED", "smmono9", true));
       }
     }
