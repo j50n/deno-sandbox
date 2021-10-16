@@ -20,7 +20,28 @@ export const UNDERLINE = `${ESC}4m`;
 export const BLINK = `${ESC}5m`;
 
 /** Rapid blink. MS-DOS ANSI.SYS, 150+ per minute; not widely supported. */
-export const RAPIDBLINK = `${ESC}6m`;
+export const RAPID_BLINK = `${ESC}6m`;
 
 /** Reverse video or invert. Swap foreground and background colors; inconsistent emulation. */
 export const INVERT = `${ESC}7m`;
+
+/** Conceal or hide. Not widely supported. */
+export const CONCEAL = `${ESC}8m`;
+
+/** Crossed-out, or strike	Characters legible but marked as if for deletion. */
+export const STRIKE = `${ESC}9m`;
+
+/** Primary (default) font. */
+export const DEFAULT_FONT = `${ESC}10m`;
+/**
+ * Alternative font	Select alternative font 1 to 9.
+ */
+export function altFont(font: number): string {
+    if(font < 1 || font > 9){
+        throw new Error(`font must be in 1..9 but got ${font}`);
+    }
+    return `${ESC}${10 + font}m`;
+}
+
+/** Fraktur (Gothic). Rarely supported. */
+export const FRAKTUR = `${ESC}20m`;
