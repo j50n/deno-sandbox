@@ -1,3 +1,5 @@
+import { sh } from "../asynciter/sh.ts";
+
 /** The ANSI escape sequence. */
 export const ESC = "\u001B[";
 
@@ -45,3 +47,25 @@ export function altFont(font: number): string {
 
 /** Fraktur (Gothic). Rarely supported. */
 export const FRAKTUR = `${ESC}20m`;
+
+export const SCREEN_1 = await (async () => {
+    try{
+        const smcup = await sh({cmd:["tput", "smcup"]}).collect();
+        return smcup[0];
+    } catch {
+        return "";
+    }
+})();
+
+export const SCREEN_0 = await (async () => {
+    try{
+        const rmcup = await sh({cmd:["tput", "rmcup"]}).collect();
+        return rmcup[0];
+    } catch {
+        return "";
+    }
+})();
+
+
+
+

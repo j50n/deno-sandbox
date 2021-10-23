@@ -7,7 +7,7 @@ const LF = encoder.encode("\n");
 /** Parameters for {@link AsyncIterableExtras4Sh.pipe()}. */
 interface ShPipedParams {
   /** The command. */
-  cmd: string[];
+  cmd: string[] | [URL, ...string[]];
   /** Optional environment definition. */
   env?: { [key: string]: string };
 }
@@ -28,7 +28,7 @@ export function shex(
   }
 }
 
-export class AsyncIterableExtras4Sh extends AsyncIterableExtras<string> implements Closable {
+export class AsyncIterableExtras4Sh extends AsyncIterableExtras<string> {
   /**
    * Constructor.
    * @param iterator The wrapped iterator.
@@ -62,6 +62,7 @@ async function* shinner(params: ShParams): AsyncIterableIterator<string> {
     env,
     stdin: stdin ? "piped" : undefined,
     stdout: "piped",
+    stderr: "inherit"
   });
 
   let inputDriver;
