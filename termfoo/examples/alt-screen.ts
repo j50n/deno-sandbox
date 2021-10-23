@@ -2,7 +2,7 @@
 
 import { TextBuffer } from "../text-buffer.ts";
 import { sleep } from "../deps/asynciter.ts";
-import { HOME, SCREEN_0, SCREEN_1 } from "../sgr.ts";
+import { HOME, SCREEN_0, SCREEN_1 } from "../ansiesc/sgr.ts";
 
 const buffer = new TextBuffer(Deno.stdout);
 buffer.write(SCREEN_1);

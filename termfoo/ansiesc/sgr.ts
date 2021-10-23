@@ -1,7 +1,7 @@
-import { sh } from "./deps/asynciter.ts";
+import { sh } from "../deps/asynciter.ts";
+import { ESC } from "./common.ts";
 
-/** The ANSI escape sequence. */
-export const ESC = "\u001B[";
+
 
 /** All attributes off */
 export const RESET = `${ESC}0m`;
@@ -72,7 +72,7 @@ export const HOME = goto(1, 1);
 
 /**
  * Goto the given position. Top left is 1,1.
- * 
+ *
  * @param x The x coordinate.
  * @param y The y coordinate.
  */
@@ -81,3 +81,6 @@ export function goto(x: number, y: number): string {
   if (y < 1) throw new RangeError("y must be 1 or greater");
   return `${ESC}${x};${y}H`;
 }
+
+
+

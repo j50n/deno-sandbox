@@ -52,8 +52,10 @@ export class TextBuffer {
    * Write a line of text to the internal buffer.
    * @param text Text to write.
    */
-  public writeln(text: string): void {
+  public writeln(text?: string): void {
+    if(text !== null){
     this.buffer.writeSync(encoder.encode(text));
+    }
     this.buffer.writeSync(LF);
   }
 }
