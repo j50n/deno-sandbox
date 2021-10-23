@@ -87,7 +87,7 @@ export class ImageScaler implements PixelSource {
         subsamples.push({ ord: Math.floor(sd1[i]), weight: sd2[i] - sd1[i] });
       }
 
-      samples[a] = subsamples.filter(s => s.weight > 0.0001);
+      samples[a] = subsamples.filter((s) => s.weight > 0.0001);
     }
 
     return samples;

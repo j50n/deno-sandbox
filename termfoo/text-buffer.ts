@@ -1,7 +1,6 @@
 import { StringWriter } from "./deps/io.ts";
 
-const encoder = new TextEncoder();
-const LF: Uint8Array = encoder.encode("\n");
+const LF: Uint8Array = new TextEncoder().encode("\n");
 
 /**
  * A simple buffer for text.
@@ -26,9 +25,17 @@ export class TextBuffer {
    * Flush the contents of the buffer.
    */
   public async flush(): Promise<void> {
-    const text = this.buffer.toString();
+    const p = new TextEncoder().encode(this.buffer.toString());
     this.buffer = new StringWriter();
-    await this.writer.write(encoder.encode(text));
+
+    let c = 0;
+    while (true) {
+      const buff = p.slice(c, c + 16384);
+      c += await this.writer.write(buff);
+      if (c >= p.length) {
+        break;
+      }
+    }
   }
 
   /**
@@ -37,7 +44,7 @@ export class TextBuffer {
   public flushSync(): void {
     const text = this.buffer.toString();
     this.buffer = new StringWriter();
-    this.writer.writeSync(encoder.encode(text));
+    this.writer.writeSync(new TextEncoder().encode(text));
   }
 
   /**
@@ -45,7 +52,7 @@ export class TextBuffer {
    * @param text Text to write.
    */
   public write(text: string): void {
-    this.buffer.writeSync(encoder.encode(text));
+    this.buffer.writeSync(new TextEncoder().encode(text));
   }
 
   /**
@@ -53,8 +60,8 @@ export class TextBuffer {
    * @param text Text to write.
    */
   public writeln(text?: string): void {
-    if(text !== null){
-    this.buffer.writeSync(encoder.encode(text));
+    if (text !== null) {
+      this.buffer.writeSync(new TextEncoder().encode(text));
     }
     this.buffer.writeSync(LF);
   }

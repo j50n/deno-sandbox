@@ -1,8 +1,6 @@
 import { sh } from "../deps/asynciter.ts";
 import { ESC } from "./common.ts";
 
-
-
 /** All attributes off */
 export const RESET = `${ESC}0m`;
 
@@ -81,6 +79,3 @@ export function goto(x: number, y: number): string {
   if (y < 1) throw new RangeError("y must be 1 or greater");
   return `${ESC}${x};${y}H`;
 }
-
-
-
