@@ -1,4 +1,4 @@
-import { sh } from "https://raw.githubusercontent.com/j50n/deno-asynciter/0.0.0/mod.ts";
+import { sh } from "./deps/asynciter.ts";
 
 /** The ANSI escape sequence. */
 export const ESC = "\u001B[";
@@ -48,6 +48,7 @@ export function altFont(font: number): string {
 /** Fraktur (Gothic). Rarely supported. */
 export const FRAKTUR = `${ESC}20m`;
 
+/** Alternate screen buffer. */
 export const SCREEN_1 = await (async () => {
   try {
     const smcup = await sh({ cmd: ["tput", "smcup"] }).collect();
@@ -57,6 +58,7 @@ export const SCREEN_1 = await (async () => {
   }
 })();
 
+/** Default screen buffer. */
 export const SCREEN_0 = await (async () => {
   try {
     const rmcup = await sh({ cmd: ["tput", "rmcup"] }).collect();
@@ -65,3 +67,17 @@ export const SCREEN_0 = await (async () => {
     return "";
   }
 })();
+
+export const HOME = goto(1, 1);
+
+/**
+ * Goto the given position. Top left is 1,1.
+ * 
+ * @param x The x coordinate.
+ * @param y The y coordinate.
+ */
+export function goto(x: number, y: number): string {
+  if (x < 1) throw new RangeError("x must be 1 or greater");
+  if (y < 1) throw new RangeError("y must be 1 or greater");
+  return `${ESC}${x};${y}H`;
+}
