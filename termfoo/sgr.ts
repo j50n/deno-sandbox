@@ -1,4 +1,4 @@
-import { sh } from "../asynciter/sh.ts";
+import { sh } from "https://raw.githubusercontent.com/j50n/deno-asynciter/0.0.0/mod.ts";
 
 /** The ANSI escape sequence. */
 export const ESC = "\u001B[";
@@ -39,33 +39,29 @@ export const DEFAULT_FONT = `${ESC}10m`;
  * Alternative font	Select alternative font 1 to 9.
  */
 export function altFont(font: number): string {
-    if(font < 1 || font > 9){
-        throw new Error(`font must be in 1..9 but got ${font}`);
-    }
-    return `${ESC}${10 + font}m`;
+  if (font < 1 || font > 9) {
+    throw new Error(`font must be in 1..9 but got ${font}`);
+  }
+  return `${ESC}${10 + font}m`;
 }
 
 /** Fraktur (Gothic). Rarely supported. */
 export const FRAKTUR = `${ESC}20m`;
 
 export const SCREEN_1 = await (async () => {
-    try{
-        const smcup = await sh({cmd:["tput", "smcup"]}).collect();
-        return smcup[0];
-    } catch {
-        return "";
-    }
+  try {
+    const smcup = await sh({ cmd: ["tput", "smcup"] }).collect();
+    return smcup[0];
+  } catch {
+    return "";
+  }
 })();
 
 export const SCREEN_0 = await (async () => {
-    try{
-        const rmcup = await sh({cmd:["tput", "rmcup"]}).collect();
-        return rmcup[0];
-    } catch {
-        return "";
-    }
+  try {
+    const rmcup = await sh({ cmd: ["tput", "rmcup"] }).collect();
+    return rmcup[0];
+  } catch {
+    return "";
+  }
 })();
-
-
-
-

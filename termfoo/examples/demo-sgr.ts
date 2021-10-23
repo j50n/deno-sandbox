@@ -1,6 +1,6 @@
 #!/usr/bin/env -S deno run
 import {
-altFont,
+  altFont,
   BLINK,
   BOLD,
   CONCEAL,

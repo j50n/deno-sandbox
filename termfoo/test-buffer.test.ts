@@ -63,7 +63,7 @@ Deno.test("TextBuffer.writeln", () => {
   buff.writeln("abc");
   buff.writeln("def");
   buff.flushSync();
-  
+
   assertEquals(
     out.toString(),
     "abc\ndef\n",
