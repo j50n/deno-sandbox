@@ -6,8 +6,14 @@ import { ImageScaler } from "../images/image-scaler.ts";
 import { jpeg } from "../images/pixel-source.ts";
 import { TextBuffer } from "../text-buffer.ts";
 
-const image = await jpeg("./resources/mountain.jpeg");
-const scaler = new ImageScaler(image, 64 + 32, 48 + 24, { x: 0, y: 0 }, {
+/*
+ * Image aspect ratio is 16:9. Height must be an even number.
+ */
+const width = 16 * 10;
+const height = 9 * 10;
+
+const image = await jpeg("./resources/dragon.jpg");
+const scaler = new ImageScaler(image, width, height, { x: 0, y: 0 }, {
   x: image.width,
   y: image.height,
 });
@@ -21,5 +27,5 @@ for (let y = 0; y < scaler.height; y += 2) {
   }
   buff.writeln(RESET);
 }
-//buff.flushSync();
+
 await buff.flush();

@@ -1,6 +1,6 @@
 import { StringWriter } from "./deps/io.ts";
 
-const LF: Uint8Array = new TextEncoder().encode("\n");
+export const LF: Uint8Array = new TextEncoder().encode("\n");
 
 /**
  * A simple buffer for text.
@@ -39,6 +39,23 @@ export class TextBuffer {
   }
 
   /**
+   * Flush the contents of the buffer, but slower.
+   */
+  public async slowFlush(): Promise<void> {
+    const p = new TextEncoder().encode(this.buffer.toString());
+    this.buffer = new StringWriter();
+
+    let c = 0;
+    while (true) {
+      const buff = p.slice(c, c + 1);
+      c += await this.writer.write(buff);
+      if (c >= p.length) {
+        break;
+      }
+    }
+  }
+
+  /**
    * Flush the contents of the buffer.
    */
   public flushSync(): void {
@@ -56,11 +73,19 @@ export class TextBuffer {
   }
 
   /**
+   * Write bytes to the internal buffer.
+   * @param bytes Bytes to write.
+   */
+  public writeBytes(bytes: Uint8Array): void {
+    this.buffer.writeSync(bytes);
+  }
+
+  /**
    * Write a line of text to the internal buffer.
    * @param text Text to write.
    */
   public writeln(text?: string): void {
-    if (text !== null) {
+    if (text != null) {
       this.buffer.writeSync(new TextEncoder().encode(text));
     }
     this.buffer.writeSync(LF);
