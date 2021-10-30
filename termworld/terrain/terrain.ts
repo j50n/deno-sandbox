@@ -23,6 +23,6 @@ export function getTerrain(index: TerrainIndex): TerrainDef {
 }
 
 export const NETHER = register(color.BLACK, color.WHITE, "@", "NETHER");
-export const WATER = register(color.BLACK, color.WATER, " ", "WATER");
+export const WATER = register(color.BLACK, color.WATER, "☺", "WATER");
 export const DIRT = register(color.BLACK, color.EARTH1, " ", "DIRT");
 export const FOREST = register(color.FOREST_DARK, color.FOREST, "Δ", "FOREST");

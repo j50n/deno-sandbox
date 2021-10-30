@@ -39,20 +39,16 @@ function walk(
   }
 }
 
-walk(world, 32, 16, 100000, WATER);
-for (let i = 0; i < 4; i++) {
-  for (let x = 0; x < world.width; x++) {
-    for (let y = 0; y < world.height; y++) {
-      if (world.getLoc(x, y) === DIRT) {
-        if (world.neighbors(x, y).filter((n) => n === WATER).length >= 7) {
-          world.setLoc(x, y, WATER);
-        }
-      }
-    }
-  }
-}
+const waterWorld = world.empty();
+walk(waterWorld, 32, 16, 100000, WATER);
+waterWorld.despeckle(WATER);
+// waterWorld.despeckle(WATER);
+world.overlay(waterWorld);
 
-walk(world, 32, 16, 10000, FOREST);
+const forestWorld = world.empty();
+walk(forestWorld, 32, 16, 10000, FOREST);
+forestWorld.despeckle(FOREST);
+world.overlay(forestWorld);
 
 async function show(x: number, y: number): Promise<void> {
   const { columns: tw, rows: th } = Deno.consoleSize(Deno.stdout.rid);
@@ -115,7 +111,9 @@ for await (const key of readKeypress()) {
       }
   }
 
+  const x = upperLeft.x;
+  const y = upperLeft.y;
   queue.push(async () => {
-    await show(upperLeft.x, upperLeft.y);
+    await show(x, y);
   });
 }
