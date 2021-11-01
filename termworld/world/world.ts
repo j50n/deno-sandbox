@@ -1,20 +1,7 @@
+import { rem } from "../../util.ts";
 import { TerrainDef } from "../terrain/terrain-def.ts";
 import * as terrain from "../terrain/terrain.ts";
 import { NETHER } from "../terrain/terrain.ts";
-
-/**
- * True remainder after division (handles negatives correctly).
- * @param numerator
- * @param denominator
- * @returns The remainder after the division.
- */
-function rem(numerator: number, denominator: number): number {
-  if (numerator < 0.0) {
-    return ((numerator % denominator) + denominator) % denominator;
-  } else {
-    return numerator % denominator;
-  }
-}
 
 export class World {
   readonly world: Uint8Array;
