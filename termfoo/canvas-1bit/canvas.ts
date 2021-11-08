@@ -23,6 +23,9 @@ const pixelChars = [
   "█",
 ].map((c) => new TextEncoder().encode(c));
 
+/**
+ * This is a canvas.
+ */
 export class Canvas {
   protected constructor(
     public readonly width: number,
