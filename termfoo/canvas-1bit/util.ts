@@ -2,6 +2,10 @@ export function isEven(n: number): boolean {
   return n % 2 === 0;
 }
 
+export function isDivisibleBy3(n: number): boolean {
+  return n % 3 === 0;
+}
+
 /**
  * If a number is odd, make it even by adding one.
  * @param n A number.
@@ -12,5 +16,13 @@ export function makeEven(n: number): number {
     return n;
   } else {
     return n + 1;
+  }
+}
+
+export function makeDivisibleBy3(n: number): number {
+  if (isDivisibleBy3(n)) {
+    return n;
+  } else {
+    return makeDivisibleBy3(n + 1);
   }
 }

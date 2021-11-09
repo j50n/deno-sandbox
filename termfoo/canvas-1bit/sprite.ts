@@ -1,20 +1,20 @@
 import { Canvas } from "./canvas.ts";
 import { Rect } from "./rect.ts";
-import { makeEven } from "./util.ts";
+import { makeDivisibleBy3, makeEven } from "./util.ts";
 
 export class Sprite {
-  readonly renders: Canvas[] = new Array(4);
+  readonly renders: Canvas[] = new Array(6);
 
   constructor(canvas: Canvas, rect?: Rect) {
     const r = rect || new Rect(0, 0, canvas.width, canvas.height);
 
-    for (let index = 0; index < 4; index++) {
+    for (let index = 0; index < 6; index++) {
       const dx = index % 2;
       const dy = Math.floor(index / 2);
 
       const render = Canvas.init(
         makeEven(r.width + dx),
-        makeEven(r.height + dy),
+        makeDivisibleBy3(r.height + dy),
       );
       this.renders[index] = render;
 

@@ -70,8 +70,8 @@ const SQUOT_CHARS = [
 assert(SQUOT_CHARS.length === 64, "there are exactly 64 squots");
 
 /**
- * Six pixels mapped onto a single width character; upper left is low pixel; mapped over 0 to 64 (6 bits). 
- * 
+ * Six pixels mapped onto a single width character; upper left is low pixel; mapped over 0 to 64 (6 bits).
+ *
  * Each character is mapped to {@link Uint8Array} as this is expected to be the normal use case.
  */
 export const SQUOTS: readonly Uint8Array[] = SQUOT_CHARS.map((c) =>
