@@ -1,4 +1,6 @@
 import { rem } from "../../util.ts";
+import { xPos } from "../ansiesc/control.ts";
+import { HOME } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./squots.ts";
@@ -164,6 +166,43 @@ export class Canvas {
       for (let x = 0; x < this.width / 2; x++) {
         buff.writeBytes(SQUOTS[this.canvas[index]]);
         index += 1;
+      }
+    }
+
+    await buff.flush();
+  }
+
+  async printDiff(other: Canvas): Promise<void> {
+    if(this.height !== other.height || this.width !== other.width){
+      throw new Error(`dimensions must match: (${this.width},${this.height}) != (${other.width},${other.height})`)
+    }
+
+    const halfWid = this.width / 2;
+
+    const buff = new TextBuffer(Deno.stdout);
+    buff.write(HOME);
+
+    for (let y = 0; y < this.height / 3; y++) {
+      if(y > 0){
+        buff.writeln();
+      }
+
+      let addr = y * halfWid;
+      let cont = false;
+      for (let x = 0; x < this.width / 2; x++) {
+        if(this.canvas[addr] === other.canvas[addr]){
+          cont = false;
+        } else {
+          if(cont){
+            buff.write(xPos(x + 1));
+            buff.writeBytes(SQUOTS[this.canvas[addr]]);
+          } else {
+            buff.write(xPos(x + 1));
+            buff.writeBytes(SQUOTS[this.canvas[addr]]);
+            cont = true;
+          }
+        }
+        addr += 1;
       }
     }
 
