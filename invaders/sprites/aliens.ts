@@ -1,19 +1,18 @@
-import { Canvas } from "../../canvas-1bit/canvas.ts";
-import { Sprite } from "../../canvas-1bit/sprite.ts";
+import { termfoo } from "../deps.ts";
 
 export const ALIEN_A = [
-  new Sprite(Canvas.from([
-  "....####....",
-  ".##########.",
-  "############",
-  "###..##..###",
-  "############",
-  "...##..##...",
-  "..##.##.##..",
-  "##........##"
-])),
+  new termfoo.Sprite(termfoo.Canvas.from([
+    "....####....",
+    ".##########.",
+    "############",
+    "###..##..###",
+    "############",
+    "...##..##...",
+    "..##.##.##..",
+    "##........##",
+  ])),
 
-new Sprite(Canvas.from([
+  new termfoo.Sprite(termfoo.Canvas.from([
     "....####....",
     ".##########.",
     "############",
@@ -21,12 +20,12 @@ new Sprite(Canvas.from([
     "############",
     "..###..###..",
     ".##..##..##.",
-    "..##....##.."
-  ]))
+    "..##....##..",
+  ])),
 ];
 
 export const ALIEN_B = [
-  new Sprite(Canvas.from([
+  new termfoo.Sprite(termfoo.Canvas.from([
     "...##...",
     "..####..",
     ".######.",
@@ -34,10 +33,10 @@ export const ALIEN_B = [
     "########",
     ".#.##.#.",
     "#......#",
-    ".#....#."
+    ".#....#.",
   ])),
 
-  new Sprite(Canvas.from([
+  new termfoo.Sprite(termfoo.Canvas.from([
     "...##...",
     "..####..",
     ".######.",
@@ -45,12 +44,12 @@ export const ALIEN_B = [
     "########",
     "..#..#..",
     ".#.##.#.",
-    "#.#..#.#"
+    "#.#..#.#",
   ])),
 ];
 
 export const ALIEN_C = [
-  new Sprite(Canvas.from([
+  new termfoo.Sprite(termfoo.Canvas.from([
     "..#.....#..",
     "...#...#...",
     "..#######..",
@@ -58,10 +57,10 @@ export const ALIEN_C = [
     "###########",
     "#.#######.#",
     "#.#.....#.#",
-    "...##.##..."
+    "...##.##...",
   ])),
 
-  new Sprite(Canvas.from([
+  new termfoo.Sprite(termfoo.Canvas.from([
     "..#.....#..",
     "#..#...#..#",
     "#.#######.#",
@@ -69,7 +68,6 @@ export const ALIEN_C = [
     "###########",
     ".#########.",
     "..#.....#..",
-    ".#.......#."
+    ".#.......#.",
   ])),
-]
-
+];

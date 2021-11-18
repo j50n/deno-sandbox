@@ -5,7 +5,7 @@ import { reset } from "../lib/term.ts";
 import { figlet } from "../lib/punchin/figlet.ts";
 import { format, parseInterval } from "../lib/punchin/interval.ts";
 import { setup } from "../lib/punchin/setup.ts";
-import { sleep } from "../lib/util.ts";
+import { sleep } from "../../util.ts";
 
 const MINUTE = 60 * 1000;
 

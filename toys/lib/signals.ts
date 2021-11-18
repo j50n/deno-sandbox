@@ -5,8 +5,8 @@
  * that terminate the process. SIGKILL cannot be intercepted.
  */
 export function intercept(): void {
-  Deno.signal("SIGINT").then(() => Deno.exit(130));
-  Deno.signal("SIGTERM").then(() => Deno.exit(133));
-  Deno.signal("SIGQUIT").then(() => Deno.exit(134));
-  Deno.signal("SIGHUP").then(() => Deno.exit(135));
+  Deno.addSignalListener("SIGINT", () => Deno.exit(130));
+  Deno.addSignalListener("SIGTERM", () => Deno.exit(133));
+  Deno.addSignalListener("SIGQUIT", () => Deno.exit(134));
+  Deno.addSignalListener("SIGHUP", () => Deno.exit(135));
 }

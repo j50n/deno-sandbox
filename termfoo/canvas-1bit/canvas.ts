@@ -173,8 +173,10 @@ export class Canvas {
   }
 
   async printDiff(other: Canvas): Promise<void> {
-    if(this.height !== other.height || this.width !== other.width){
-      throw new Error(`dimensions must match: (${this.width},${this.height}) != (${other.width},${other.height})`)
+    if (this.height !== other.height || this.width !== other.width) {
+      throw new Error(
+        `dimensions must match: (${this.width},${this.height}) != (${other.width},${other.height})`,
+      );
     }
 
     const halfWid = this.width / 2;
@@ -183,17 +185,17 @@ export class Canvas {
     buff.write(HOME);
 
     for (let y = 0; y < this.height / 3; y++) {
-      if(y > 0){
+      if (y > 0) {
         buff.writeln();
       }
 
       let addr = y * halfWid;
       let cont = false;
       for (let x = 0; x < this.width / 2; x++) {
-        if(this.canvas[addr] === other.canvas[addr]){
+        if (this.canvas[addr] === other.canvas[addr]) {
           cont = false;
         } else {
-          if(cont){
+          if (cont) {
             buff.write(xPos(x + 1));
             buff.writeBytes(SQUOTS[this.canvas[addr]]);
           } else {

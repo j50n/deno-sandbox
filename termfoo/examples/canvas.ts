@@ -1,15 +1,12 @@
 import { sleep } from "../../util.ts";
-import { HIDE_CURSOR, SHOW_CURSOR } from "../ansiesc/private.ts";
-import { HOME } from "../ansiesc/sgr.ts";
-import { Canvas } from "../canvas-1bit/canvas.ts";
-import { ALIEN_A, ALIEN_B, ALIEN_C } from "../invaders/sprites/aliens.ts";
-import { TextBuffer } from "../text-buffer.ts";
+import { Canvas, HIDE_CURSOR, SHOW_CURSOR } from "../mod.ts";
+import { ALIEN_A, ALIEN_B, ALIEN_C } from "../../invaders/sprites/aliens.ts";
 
 console.log(HIDE_CURSOR);
 
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
 let canvas = Canvas.init(columns * 2, rows * 3);
-let oldCanvas : Canvas = canvas.clone();
+let oldCanvas: Canvas = canvas.clone();
 canvas.print();
 
 try {
@@ -17,7 +14,7 @@ try {
     const t1 = new Date().getTime();
     oldCanvas = canvas.clone();
     canvas = Canvas.init(columns * 2, rows * 3);
-    
+
     if (round % 2 === 0) {
       canvas.writeSprite(round + 20, round, ALIEN_A[0]);
     } else {
@@ -41,7 +38,7 @@ try {
 
     //console.log(t2 - t);
 
-    await sleep(100-(t2-t1));
+    await sleep(100 - (t2 - t1));
   }
 } finally {
   console.log(SHOW_CURSOR);
