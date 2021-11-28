@@ -3,6 +3,8 @@ import { sleep } from "../util.ts";
 import { ALIEN_A, ALIEN_B, ALIEN_C } from "./sprites/aliens.ts";
 import { termfoo } from "./deps.ts";
 
+const FRAME_MS = 1000/60;
+
 console.log(termfoo.HIDE_CURSOR);
 
 class Alien {
@@ -87,11 +89,11 @@ sortAliens();
 try {
   while (true) {
     const elapsedMs = new Date().getTime() - lastFrameTime;
-    const waitMs = 16 - elapsedMs;
+    const waitMs = FRAME_MS - elapsedMs;
     if (waitMs > 0) {
       await sleep(waitMs);
     }
-    lastFrameTime += 16;
+    lastFrameTime += FRAME_MS;
 
     const canvas = termfoo.Canvas.init(columns * 2, rows * 3);
 
