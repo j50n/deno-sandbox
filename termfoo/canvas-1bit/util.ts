@@ -26,3 +26,11 @@ export function makeDivisibleBy3(n: number): number {
     return makeDivisibleBy3(n + 1);
   }
 }
+
+export function uint8Array(n: number, value: number): Uint8Array {
+  const arr = new Uint8Array(n);
+  for(let i=0; i<arr.length; i++){
+    arr[i]= value;
+  }
+  return arr;
+}

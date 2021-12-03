@@ -4,7 +4,7 @@ import { HOME } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./squots.ts";
-import { isDivisibleBy3, isEven, makeDivisibleBy3, makeEven } from "./util.ts";
+import { isDivisibleBy3, isEven, makeDivisibleBy3, makeEven, uint8Array } from "./util.ts";
 
 const bitvals = [1, 2, 4, 8, 16, 32];
 
@@ -16,20 +16,24 @@ export class Canvas {
     public readonly width: number,
     public readonly height: number,
     protected readonly canvas: Uint8Array,
+    protected readonly fg: Uint8Array,
+    protected readonly bg: Uint8Array
   ) {
   }
 
-  static init(width: number, height: number): Canvas {
+  static init(width: number, height: number, fg= 7, bg= 0): Canvas {
     if (!isEven(width)) {
       throw new Error(`width must be an even number: ${width}`);
     }
     if (!isDivisibleBy3(height)) {
       throw new Error(`height must be an even number: ${height}`);
     }
-    return new Canvas(width, height, new Uint8Array(width * height / 6));
+
+    const arraySize = width * height / 6;
+    return new Canvas(width, height, new Uint8Array(arraySize), uint8Array(arraySize, fg), uint8Array(arraySize, bg));
   }
 
-  static from(def: string[]): Canvas {
+  static from(def: string[], fg = 7): Canvas {
     const width = makeEven(
       def.map((d) => d.length).reduce((a, b) => Math.max(a, b)),
     );
@@ -43,7 +47,7 @@ export class Canvas {
       let x = 0;
       for (const d of dstr) {
         if (d !== ".") {
-          canvas.setPixel(x, y);
+          canvas.setPixel(x, y, fg);
         }
         x += 1;
       }
@@ -53,7 +57,7 @@ export class Canvas {
   }
 
   clone(): Canvas {
-    return new Canvas(this.width, this.height, this.canvas.slice(0));
+    return new Canvas(this.width, this.height, this.canvas.slice(0), this.fg.slice(0), this.bg.slice(0));
   }
 
   *squotRows(): IterableIterator<Uint8Array> {
@@ -140,9 +144,10 @@ export class Canvas {
     };
   }
 
-  setPixel(x: number, y: number): void {
+  setPixel(x: number, y: number, fg: number): void {
     const { addr, bit } = this.pixelLoc(x, y);
     this.canvas[addr] |= bit;
+    this.fg[addr] = fg;
   }
 
   clearPixel(x: number, y: number): void {
@@ -153,6 +158,16 @@ export class Canvas {
   getPixel(x: number, y: number): number {
     const { addr, bit } = this.pixelLoc(x, y);
     return (this.canvas[addr] & bit) === 0 ? 0 : 1;
+  }
+
+  getPixelFgColor(x: number, y: number): number {
+    const { addr } = this.pixelLoc(x, y);
+    return this.fg[addr];
+  }
+
+  getPixelBgColor(x: number, y: number): number {
+    const { addr } = this.pixelLoc(x, y);
+    return this.bg[addr];
   }
 
   async print(): Promise<void> {
