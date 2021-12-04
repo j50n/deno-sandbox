@@ -3,7 +3,7 @@ import { xPos } from "../ansiesc/control.ts";
 import { HOME } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
-import { SQUOTS } from "./squots.ts";
+import { SQUOTS } from "./lookup/squots.ts";
 import { isDivisibleBy3, isEven, makeDivisibleBy3, makeEven, uint8Array } from "./util.ts";
 
 const bitvals = [1, 2, 4, 8, 16, 32];

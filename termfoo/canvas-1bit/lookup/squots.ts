@@ -1,4 +1,4 @@
-import { assert } from "../deps/asserts.ts";
+import { assert } from "../../deps/asserts.ts";
 
 const SQUOT_CHARS = [
   /* 000000 */ "\u{20}",
