@@ -88,12 +88,16 @@ function atEdge(canvas: termfoo.Canvas): boolean {
 sortAliens();
 try {
   while (true) {
+    
+
     const elapsedMs = new Date().getTime() - lastFrameTime;
     const waitMs = FRAME_MS - elapsedMs;
     if (waitMs > 0) {
       await sleep(waitMs);
     }
     lastFrameTime += FRAME_MS;
+
+    // const t1 = new Date().getTime();
 
     const canvas = termfoo.Canvas.init(columns * 2, rows * 3);
 
@@ -113,6 +117,10 @@ try {
     }
 
     await canvas.printDiff(oldCanvas);
+    // await canvas.print();
+
+    // const t2 = new Date().getTime();
+    // console.log(t2 - t1);
 
     oldCanvas = canvas;
     frameCount += 1;

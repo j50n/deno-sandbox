@@ -11,7 +11,7 @@ import {
   makeEven,
   uint8Array,
 } from "./util.ts";
-import { FG_COLOR } from "./lookup/colors.ts";
+import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
 
 const bitvals = [1, 2, 4, 8, 16, 32];
 
@@ -29,7 +29,7 @@ class Printer {
     }
 
     if (bg !== this.bg) {
-      this.buffer.writeBytes(FG_COLOR[bg]);
+      this.buffer.writeBytes(BG_COLOR[bg]);
       this.bg = bg;
     }
 
