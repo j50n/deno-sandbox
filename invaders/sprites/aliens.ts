@@ -1,3 +1,4 @@
+import { BLUE, GREEN, RED } from "../../termfoo/mod.ts";
 import { termfoo } from "../deps.ts";
 
 export const ALIEN_A = [
@@ -10,7 +11,7 @@ export const ALIEN_A = [
     "...##..##...",
     "..##.##.##..",
     "##........##",
-  ])),
+  ], GREEN)),
 
   new termfoo.Sprite(termfoo.Canvas.from([
     "....####....",
@@ -21,7 +22,7 @@ export const ALIEN_A = [
     "..###..###..",
     ".##..##..##.",
     "..##....##..",
-  ])),
+  ], GREEN)),
 ];
 
 export const ALIEN_B = [
@@ -34,7 +35,7 @@ export const ALIEN_B = [
     ".#.##.#.",
     "#......#",
     ".#....#.",
-  ])),
+  ], BLUE)),
 
   new termfoo.Sprite(termfoo.Canvas.from([
     "...##...",
@@ -45,7 +46,7 @@ export const ALIEN_B = [
     "..#..#..",
     ".#.##.#.",
     "#.#..#.#",
-  ])),
+  ], BLUE)),
 ];
 
 export const ALIEN_C = [
@@ -58,7 +59,7 @@ export const ALIEN_C = [
     "#.#######.#",
     "#.#.....#.#",
     "...##.##...",
-  ])),
+  ], RED)),
 
   new termfoo.Sprite(termfoo.Canvas.from([
     "..#.....#..",
@@ -69,5 +70,5 @@ export const ALIEN_C = [
     ".#########.",
     "..#.....#..",
     ".#.......#.",
-  ])),
+  ], RED)),
 ];

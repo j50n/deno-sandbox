@@ -3,7 +3,7 @@ import { sleep } from "../util.ts";
 import { ALIEN_A, ALIEN_B, ALIEN_C } from "./sprites/aliens.ts";
 import { termfoo } from "./deps.ts";
 
-const FRAME_MS = 1000/60;
+const FRAME_MS = 1000 / 60;
 
 console.log(termfoo.HIDE_CURSOR);
 

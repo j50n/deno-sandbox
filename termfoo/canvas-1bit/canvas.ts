@@ -4,9 +4,38 @@ import { HOME } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./lookup/squots.ts";
-import { isDivisibleBy3, isEven, makeDivisibleBy3, makeEven, uint8Array } from "./util.ts";
+import {
+  isDivisibleBy3,
+  isEven,
+  makeDivisibleBy3,
+  makeEven,
+  uint8Array,
+} from "./util.ts";
+import { FG_COLOR } from "./lookup/colors.ts";
 
 const bitvals = [1, 2, 4, 8, 16, 32];
+
+class Printer {
+  fg: number | null = null;
+  bg: number | null = null;
+
+  constructor(public buffer: TextBuffer) {
+  }
+
+  print(fg: number, bg: number, squotIndex: number): void {
+    if (fg !== this.fg) {
+      this.buffer.writeBytes(FG_COLOR[fg]);
+      this.fg = fg;
+    }
+
+    if (bg !== this.bg) {
+      this.buffer.writeBytes(FG_COLOR[bg]);
+      this.bg = bg;
+    }
+
+    this.buffer.writeBytes(SQUOTS[squotIndex]);
+  }
+}
 
 /**
  * This is a canvas.
@@ -17,11 +46,11 @@ export class Canvas {
     public readonly height: number,
     protected readonly canvas: Uint8Array,
     protected readonly fg: Uint8Array,
-    protected readonly bg: Uint8Array
+    protected readonly bg: Uint8Array,
   ) {
   }
 
-  static init(width: number, height: number, fg= 7, bg= 0): Canvas {
+  static init(width: number, height: number, fg = 7, bg = 0): Canvas {
     if (!isEven(width)) {
       throw new Error(`width must be an even number: ${width}`);
     }
@@ -30,10 +59,16 @@ export class Canvas {
     }
 
     const arraySize = width * height / 6;
-    return new Canvas(width, height, new Uint8Array(arraySize), uint8Array(arraySize, fg), uint8Array(arraySize, bg));
+    return new Canvas(
+      width,
+      height,
+      new Uint8Array(arraySize),
+      uint8Array(arraySize, fg),
+      uint8Array(arraySize, bg),
+    );
   }
 
-  static from(def: string[], fg = 7): Canvas {
+  static from(def: string[], fg: number): Canvas {
     const width = makeEven(
       def.map((d) => d.length).reduce((a, b) => Math.max(a, b)),
     );
@@ -57,14 +92,26 @@ export class Canvas {
   }
 
   clone(): Canvas {
-    return new Canvas(this.width, this.height, this.canvas.slice(0), this.fg.slice(0), this.bg.slice(0));
+    return new Canvas(
+      this.width,
+      this.height,
+      this.canvas.slice(0),
+      this.fg.slice(0),
+      this.bg.slice(0),
+    );
   }
 
-  *squotRows(): IterableIterator<Uint8Array> {
+  *rows(): IterableIterator<
+    { squots: Uint8Array; fgs: Uint8Array; bgs: Uint8Array }
+  > {
     let current = 0;
     const halfWid = this.width / 2;
     while (current < this.canvas.length) {
-      yield this.canvas.slice(current, current + halfWid);
+      yield {
+        squots: this.canvas.slice(current, current + halfWid),
+        fgs: this.fg.slice(current, current + halfWid),
+        bgs: this.bg.slice(current, current + halfWid),
+      };
       current += halfWid;
     }
   }
@@ -79,14 +126,15 @@ export class Canvas {
     const spriteImage = sprite.renders[rem(x, 2) + 2 * rem(y, 3)];
 
     let ny = 3 * Math.floor(y / 3);
-    for (const squotRow of spriteImage.squotRows()) {
+    for (const { squots, fgs } of spriteImage.rows()) {
       if (ny >= 0 && ny < this.height) {
         let nx = 2 * Math.floor(x / 2);
         let addr = this.pixelAddr(nx, ny);
 
-        for (const squot of squotRow) {
+        for (let i = 0; i < squots.length; i++) {
           if (nx >= 0 && nx < this.width) {
-            this.canvas[addr] |= squot;
+            this.canvas[addr] |= squots[i];
+            this.fg[addr] = fgs[i];
           }
           nx += 2;
           addr += 1;
@@ -106,14 +154,14 @@ export class Canvas {
     const spriteImage = sprite.renders[rem(x, 2) + 3 * rem(y, 3)];
 
     let ny = 3 * Math.floor(y / 3);
-    for (const squotRow of spriteImage.squotRows()) {
+    for (const { squots } of spriteImage.rows()) {
       if (ny >= 0 && ny < this.height) {
         let nx = 2 * Math.floor(x / 2);
         let addr = this.pixelAddr(nx, ny);
 
-        for (const squot of squotRow) {
+        for (let i = 0; i < squots.length; i++) {
           if (nx >= 0 && nx < this.width) {
-            this.canvas[addr] &= 0xF & ~squot;
+            this.canvas[addr] &= 0xF & ~squots[i];
           }
           nx += 2;
           addr += 1;
@@ -173,14 +221,16 @@ export class Canvas {
   async print(): Promise<void> {
     const buff = new TextBuffer(Deno.stdout);
 
-    let index = 0;
+    let addr = 0;
     for (let y = 0; y < this.height / 3; y++) {
-      if (index !== 0) {
+      if (addr !== 0) {
         buff.writeln();
       }
+
+      const printer = new Printer(buff);
       for (let x = 0; x < this.width / 2; x++) {
-        buff.writeBytes(SQUOTS[this.canvas[index]]);
-        index += 1;
+        printer.print(this.fg[addr], this.bg[addr], this.canvas[addr]);
+        addr += 1;
       }
     }
 
@@ -205,19 +255,22 @@ export class Canvas {
       }
 
       let addr = y * halfWid;
-      let cont = false;
+
+      let printer: Printer | null = null;
       for (let x = 0; x < this.width / 2; x++) {
-        if (this.canvas[addr] === other.canvas[addr]) {
-          cont = false;
+        if (
+          this.canvas[addr] === other.canvas[addr] &&
+          this.bg[addr] === other.bg[addr] &&
+          this.fg[addr] === other.fg[addr]
+        ) {
+          printer = null;
         } else {
-          if (cont) {
+          if (printer === null) {
+            printer = new Printer(buff);
             buff.write(xPos(x + 1));
-            buff.writeBytes(SQUOTS[this.canvas[addr]]);
-          } else {
-            buff.write(xPos(x + 1));
-            buff.writeBytes(SQUOTS[this.canvas[addr]]);
-            cont = true;
           }
+
+          printer.print(this.fg[addr], this.bg[addr], this.canvas[addr]);
         }
         addr += 1;
       }

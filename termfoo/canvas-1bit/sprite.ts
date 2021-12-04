@@ -21,7 +21,8 @@ export class Sprite {
       for (let y = 0; y < canvas.height; y++) {
         for (let x = 0; x < canvas.width; x++) {
           if (canvas.getPixel(r.x + x, r.y + y) !== 0) {
-            render.setPixel(dx + x, y + dy);
+            const fg = canvas.getPixelFgColor(r.x + x, r.y + y);
+            render.setPixel(dx + x, y + dy, fg);
           }
         }
       }
