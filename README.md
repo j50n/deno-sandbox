@@ -10,3 +10,4 @@ This is a work in progress, and I probably won't turn it into a real game due to
 ```sh
 deno --unstable run https://raw.githubusercontent.com/j50n/deno-sandbox/main/invaders/invaders.ts
 ```
+**Note:** Deno applications are secure by default. See [Sandboxing in Deno](https://medium.com/deno-the-complete-reference/sandboxing-in-deno-b3d514d88b63). It is safe to run this application like this because you are not giving it any extra permissions.
