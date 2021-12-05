@@ -5,7 +5,7 @@ import { ALIEN_A, ALIEN_B, ALIEN_C } from "../../invaders/sprites/aliens.ts";
 console.log(HIDE_CURSOR);
 
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
-let canvas = Canvas.init(columns * 2, rows * 3);
+let canvas = Canvas.initToCharDimensions(columns, rows);
 let oldCanvas: Canvas = canvas.clone();
 canvas.print();
 
@@ -13,7 +13,7 @@ try {
   for (let round = 0; round < 300; round++) {
     const t1 = new Date().getTime();
     oldCanvas = canvas.clone();
-    canvas = Canvas.init(columns * 2, rows * 3);
+    canvas = Canvas.initToCharDimensions(columns, rows);
 
     if (round % 2 === 0) {
       canvas.writeSprite(round + 20, round, ALIEN_A[0]);

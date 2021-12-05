@@ -17,7 +17,7 @@ class Alien {
   }
 
   get width(): number {
-    return this.anim[0].renders[0].width;
+    return this.anim[0].renders[0].widthInPixels;
   }
 
   move(x: number, y: number): void {
@@ -57,7 +57,7 @@ for (let i = 0; i < 11; i++) {
 
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
 //let canvas = termfoo.Canvas.init(columns * 2, rows * 3);
-let oldCanvas = termfoo.Canvas.init(columns * 2, rows * 3);
+let oldCanvas = termfoo.Canvas.initToCharDimensions(columns, rows);
 oldCanvas.print();
 
 let lastFrameTime = new Date().getTime();
@@ -73,7 +73,7 @@ function sortAliens(): void {
 function atEdge(canvas: termfoo.Canvas): boolean {
   for (const alien of aliens) {
     if (direction > 0) {
-      if (alien.pos.x + alien.width >= canvas.width) {
+      if (alien.pos.x + alien.width >= canvas.widthInPixels) {
         return true;
       }
     } else {
@@ -88,8 +88,6 @@ function atEdge(canvas: termfoo.Canvas): boolean {
 sortAliens();
 try {
   while (true) {
-    
-
     const elapsedMs = new Date().getTime() - lastFrameTime;
     const waitMs = FRAME_MS - elapsedMs;
     if (waitMs > 0) {
@@ -99,7 +97,7 @@ try {
 
     // const t1 = new Date().getTime();
 
-    const canvas = termfoo.Canvas.init(columns * 2, rows * 3);
+    const canvas = termfoo.Canvas.initToCharDimensions(columns, rows);
 
     const index = frameCount % aliens.length;
     if (index === 0) {

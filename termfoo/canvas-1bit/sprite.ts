@@ -1,25 +1,25 @@
 import { Canvas } from "./canvas.ts";
 import { Rect } from "./rect.ts";
-import { makeDivisibleBy3, makeEven } from "./util.ts";
 
 export class Sprite {
   readonly renders: Canvas[] = new Array(6);
 
   constructor(canvas: Canvas, rect?: Rect) {
-    const r = rect || new Rect(0, 0, canvas.width, canvas.height);
+    const r = rect ||
+      new Rect(0, 0, canvas.widthInPixels, canvas.heightInPixels);
 
     for (let index = 0; index < 6; index++) {
       const dx = index % 2;
       const dy = Math.floor(index / 2);
 
-      const render = Canvas.init(
-        makeEven(r.width + dx),
-        makeDivisibleBy3(r.height + dy),
+      const render = Canvas.initToPixelDimensions(
+        r.width + dx,
+        r.height + dy,
       );
       this.renders[index] = render;
 
-      for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < canvas.width; x++) {
+      for (let y = 0; y < canvas.heightInPixels; y++) {
+        for (let x = 0; x < canvas.widthInPixels; x++) {
           if (canvas.getPixel(r.x + x, r.y + y) !== 0) {
             const fg = canvas.getPixelFgColor(r.x + x, r.y + y);
             render.setPixel(dx + x, y + dy, fg);
@@ -27,5 +27,38 @@ export class Sprite {
         }
       }
     }
+  }
+
+  /**
+   * Treat each line in the def as a row of pixels, and each character as a pixel in the row.
+   *
+   * Characters ".", " " (space), "-", and "+" are treated as a blank pixel. Everything else is
+   * treated as a solid pixel.
+   *
+   * @param def Pixel definition.
+   * @param fg The foreground color applied to solid pixels.
+   * @returns A canvas with an image created from the definition with the specified color.
+   */
+  static init(def: string[], fg: number): Sprite {
+    const canvas = Canvas.initToPixelDimensions(
+      def.map((d) => d.length).reduce((a, b) => Math.max(a, b)),
+      def.length,
+    );
+
+    const BLANK_PIXELS = new Set([".", " ", "-", "+"]);
+
+    for (let y = 0; y < def.length; y++) {
+      const dstr = def[y];
+
+      let x = 0;
+      for (const d of dstr) {
+        if (!BLANK_PIXELS.has(d)) {
+          canvas.setPixel(x, y, fg);
+        }
+        x += 1;
+      }
+    }
+
+    return new Sprite(canvas);
   }
 }
