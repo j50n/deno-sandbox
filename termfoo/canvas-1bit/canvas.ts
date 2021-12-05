@@ -6,7 +6,7 @@ import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./lookup/squots.ts";
 import { makeDivisibleBy3, makeEven, uint8Array } from "./util.ts";
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
-import { ESC } from "../ansiesc/common.ts";
+import { BLACK, WHITE } from "./color.ts";
 
 const bitvals = [1, 2, 4, 8, 16, 32];
 
@@ -360,7 +360,8 @@ export class Canvas {
 
     if (onAfterDraw !== undefined) {
       buff.write(HOME);
-      buff.write(`${ESC}37m`);
+      buff.writeBytes(FG_COLOR[WHITE]);
+      buff.writeBytes(BG_COLOR[BLACK]);
       onAfterDraw(buff);
     }
 

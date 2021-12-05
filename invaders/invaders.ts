@@ -92,8 +92,10 @@ try {
     const waitMs = FRAME_MS - elapsedMs;
     if (waitMs > 0) {
       await sleep(waitMs);
+      lastFrameTime += FRAME_MS;
+    } else {
+      lastFrameTime = new Date().getTime();
     }
-    lastFrameTime += FRAME_MS;
 
     const t1 = new Date().getTime();
 
