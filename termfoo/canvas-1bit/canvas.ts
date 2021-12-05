@@ -4,13 +4,28 @@ import { HOME, RESET } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./lookup/squots.ts";
-import { makeDivisibleBy3, makeEven, uint8Array } from "./util.ts";
+import { concatUint8Arrays, makeDivisibleBy3, makeEven, uint32Array} from "./util.ts";
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
 import { BLACK, WHITE } from "./color.ts";
+import { ESC } from "../ansiesc/common.ts";
+
 
 const bitvals = [1, 2, 4, 8, 16, 32];
 
 type PrintCallbackFn = (buff: TextBuffer) => void;
+
+const ANSI_24BIT_COLOR_FG_PREFIX = new TextEncoder().encode(`${ESC}38;2;`);
+const ANSI_24BIT_COLOR_BG_PREFIX = new TextEncoder().encode(`${ESC}48;2;`);
+const ANSI_SEP = new TextEncoder().encode(";");
+const ANSI_SUFFIX = new TextEncoder().encode("m");
+
+const ANSI_BYTE : Uint8Array[] = (()=>{
+  const result = [];
+  for(let i=0; i<256; i++){
+    result.push(new TextEncoder().encode(`${i}`));
+  }
+  return result;
+})();
 
 class Printer {
   fg: number | null = null;
@@ -21,16 +36,56 @@ class Printer {
 
   print(fg: number, bg: number, squotIndex: number): void {
     if (fg !== this.fg) {
-      this.buffer.writeBytes(FG_COLOR[fg]);
+      this.buffer.writeBytes(printFgColor(fg));
       this.fg = fg;
     }
 
     if (bg !== this.bg) {
-      this.buffer.writeBytes(BG_COLOR[bg]);
+      this.buffer.writeBytes(printBgColor(bg));
       this.bg = bg;
     }
 
     this.buffer.writeBytes(SQUOTS[squotIndex]);
+  }
+}
+
+function printFgColor(color: number): Uint8Array {
+  if(!Number.isInteger(color)){
+    throw new Error("color must be an integer");
+  }
+
+  const hiByte = (color & 0xFF000000) >> 24;
+  if(hiByte === 0){
+    const color8Index = color;
+    return FG_COLOR[color8Index];
+  }else if(hiByte === 1){
+    const r = (color & 0xFF0000) >> 16;
+    const g = (color & 0xFF00) >> 8;
+    const b = color & 0xFF;
+
+    return concatUint8Arrays(ANSI_24BIT_COLOR_FG_PREFIX, ANSI_BYTE[r], ANSI_SEP, ANSI_BYTE[g], ANSI_SEP, ANSI_BYTE[b], ANSI_SUFFIX);
+  } else {
+    throw new Error("illegal color value");
+  }
+}
+
+function printBgColor(color: number): Uint8Array {
+  if(!Number.isInteger(color)){
+    throw new Error("color must be an integer");
+  }
+
+  const hiByte = (color & 0xFFFFFFFF) >> 24;
+  if(hiByte === 0){
+    const color8Index = color;
+    return BG_COLOR[color8Index];
+  }else if(hiByte === 1){
+    const r = (color & 0xFF0000) >> 16;
+    const g = (color & 0xFF00) >> 8;
+    const b = color & 0xFF;
+
+    return concatUint8Arrays(ANSI_24BIT_COLOR_BG_PREFIX, ANSI_BYTE[r], ANSI_SEP, ANSI_BYTE[g], ANSI_SEP, ANSI_BYTE[b], ANSI_SUFFIX);
+  } else {
+    throw new Error("illegal color value");
   }
 }
 
@@ -55,8 +110,8 @@ export class Canvas {
     public readonly widthInPixels: number,
     public readonly heightInPixels: number,
     protected readonly bitmap: Uint8Array,
-    protected readonly fg: Uint8Array,
-    protected readonly bg: Uint8Array,
+    protected readonly fg: Uint32Array,
+    protected readonly bg: Uint32Array,
   ) {
   }
 
@@ -93,8 +148,8 @@ export class Canvas {
       widthInPixels,
       heightInPixels,
       new Uint8Array(arraySize),
-      uint8Array(arraySize, fg),
-      uint8Array(arraySize, bg),
+      uint32Array(arraySize, fg),
+      uint32Array(arraySize, bg),
     );
   }
 
@@ -142,7 +197,7 @@ export class Canvas {
    * Get the rows of this canvas.
    */
   *rows(): IterableIterator<
-    { squots: Uint8Array; fgs: Uint8Array; bgs: Uint8Array }
+    { squots: Uint8Array; fgs: Uint32Array; bgs: Uint32Array }
   > {
     let current = 0;
 

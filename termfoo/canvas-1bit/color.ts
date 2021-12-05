@@ -29,18 +29,43 @@ export const BRIGHT = 8;
  * @param b Blue component; 0 to 5.
  * @returns The 8-bit color index.
  */
-export function color(r: number, g: number, b: number): number {
+export function color8(r: number, g: number, b: number): number {
   if (r < 0 || r > 5) {
-    throw new Error("color r (red) must be between 0 and 5");
+    throw new Error("color8 r (red) must be between 0 and 5");
   }
 
   if (g < 0 || g > 5) {
-    throw new Error("color g (green) must be between 0 and 5");
+    throw new Error("color8 g (green) must be between 0 and 5");
   }
 
   if (b < 0 || b > 5) {
-    throw new Error("color b (blue) must be between 0 and 5");
+    throw new Error("color8 b (blue) must be between 0 and 5");
   }
 
   return 16 + 36 * r + 6 * g + b;
 }
+
+/**
+ * 256x256x256 color cube.
+ * @param r Red component; 0 to 255.
+ * @param g Green component; 0 to 255.
+ * @param b Blue component; 0 to 255.
+ * @returns The 24-bit color index.
+ */
+ export function color24(r: number, g: number, b: number): number {
+    if (r < 0 || r > 255) {
+      throw new Error("color24 r (red) must be between 0 and 255");
+    }
+  
+    if (g < 0 || g > 255) {
+      throw new Error("color24 g (green) must be between 0 and 255");
+    }
+  
+    if (b < 0 || b > 255) {
+      throw new Error("color24 b (blue) must be between 0 and 255");
+    }
+  
+    return (1 << 24) | (r << 16) | (g << 8) | b;
+  }
+
+  
