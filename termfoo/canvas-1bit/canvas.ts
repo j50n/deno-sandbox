@@ -1,13 +1,16 @@
 import { rem } from "../../util.ts";
 import { xPos } from "../ansiesc/control.ts";
-import { HOME } from "../ansiesc/sgr.ts";
+import { HOME, RESET } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./lookup/squots.ts";
 import { makeDivisibleBy3, makeEven, uint8Array } from "./util.ts";
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
+import { ESC } from "../ansiesc/common.ts";
 
 const bitvals = [1, 2, 4, 8, 16, 32];
+
+type PrintCallbackFn = (buff: TextBuffer) => void;
 
 class Printer {
   fg: number | null = null;
@@ -119,6 +122,10 @@ export class Canvas {
     );
   }
 
+  /**
+   * Clone (deep copy) the canvas.
+   * @returns A deep copy of the canvas.
+   */
   clone(): Canvas {
     return new Canvas(
       this.widthInChars,
@@ -131,6 +138,9 @@ export class Canvas {
     );
   }
 
+  /**
+   * Get the rows of this canvas.
+   */
   *rows(): IterableIterator<
     { squots: Uint8Array; fgs: Uint8Array; bgs: Uint8Array }
   > {
@@ -175,7 +185,9 @@ export class Canvas {
   }
 
   /**
-   * Clear the pixels of the sprite.
+   * Clear the pixels of the sprite. Unconditionally blanks all the pixels that are set in the sprite image.
+   * This does not change colors.
+   *
    * @param x Upper left X. May go out of bounds.
    * @param y Upper left Y. May go out of bounds.
    * @param sprite The sprite to clear.
@@ -201,6 +213,13 @@ export class Canvas {
     }
   }
 
+  /**
+   * The character address of a pixel.
+   *
+   * @param x The pixel X location.
+   * @param y The pixel Y location.
+   * @returns The character address.
+   */
   protected pixelAddr(x: number, y: number): number {
     const xpix = Math.floor(x / 2);
     const ypix = Math.floor(y / 3);
@@ -208,6 +227,13 @@ export class Canvas {
     return ypix * (this.widthInPixels / 2) + xpix;
   }
 
+  /**
+   * The character address plus the bit location of a pixel.
+   *
+   * @param x The pixel X location.
+   * @param y The pixel Y location.
+   * @returns The character address.
+   */
   protected pixelLoc(x: number, y: number): { addr: number; bit: number } {
     if (x < 0 || x >= this.widthInPixels || y < 0 || y >= this.heightInPixels) {
       throw new RangeError(`pixel range error: (${x}:${y})`);
@@ -248,8 +274,16 @@ export class Canvas {
     return this.bg[addr];
   }
 
+  /**
+   * Write the canvas to console.
+   *
+   * This writes all squot values and colors, replacing everything. In most cases, {@link printDiff()}
+   * is better for animation.
+   */
   async print(): Promise<void> {
     const buff = new TextBuffer(Deno.stdout);
+
+    buff.write(HOME);
 
     let addr = 0;
     for (let y = 0; y < this.heightInChars; y++) {
@@ -267,20 +301,34 @@ export class Canvas {
     await buff.flush();
   }
 
-  async printDiff(other: Canvas): Promise<void> {
+  /**
+   * Calculate the difference between this canvas (the "new" canvas) and the old (previous) canvas
+   * and write it to console.
+   *
+   * The differencing operation is very fast, and usually many times faster than {@link print()}.
+   *
+   * @param oldCanvas The old (previous) canvas.
+   * @param onAfterDraw Callback to let you write text to the console. You are responsible for
+   *                    background color of the written text. The diff will not take writes done
+   *                    by the callback function into account.
+   */
+  async printDiff(
+    oldCanvas: Canvas,
+    onAfterDraw?: PrintCallbackFn,
+  ): Promise<void> {
     if (
-      this.heightInPixels !== other.heightInPixels ||
-      this.widthInPixels !== other.widthInPixels
+      this.heightInPixels !== oldCanvas.heightInPixels ||
+      this.widthInPixels !== oldCanvas.widthInPixels
     ) {
       throw new Error(
-        `pixel dimensions must match: (${this.widthInPixels},${this.heightInPixels}) != (${other.widthInPixels},${other.heightInPixels})`,
+        `pixel dimensions must match: (${this.widthInPixels},${this.heightInPixels}) != (${oldCanvas.widthInPixels},${oldCanvas.heightInPixels})`,
       );
     }
 
     const buff = new TextBuffer(Deno.stdout);
     buff.write(HOME);
 
-    for (let y = 0; y < this.heightInPixels / 3; y++) {
+    for (let y = 0; y < this.heightInChars; y++) {
       if (y > 0) {
         buff.writeln();
       }
@@ -289,10 +337,13 @@ export class Canvas {
 
       let printer: Printer | null = null;
       for (let x = 0; x < this.widthInChars; x++) {
+        const bits = this.bitmap[addr];
+        const oldBits = oldCanvas.bitmap[addr];
+
         if (
-          this.bitmap[addr] === other.bitmap[addr] &&
-          this.bg[addr] === other.bg[addr] &&
-          this.fg[addr] === other.fg[addr]
+          ((bits === 0 && oldBits === 0) ||
+            (bits === oldBits && this.fg[addr] === oldCanvas.fg[addr])) &&
+          this.bg[addr] === oldCanvas.bg[addr]
         ) {
           printer = null;
         } else {
@@ -301,11 +352,19 @@ export class Canvas {
             buff.write(xPos(x + 1));
           }
 
-          printer.print(this.fg[addr], this.bg[addr], this.bitmap[addr]);
+          printer.print(this.fg[addr], this.bg[addr], bits);
         }
         addr += 1;
       }
     }
+
+    if (onAfterDraw !== undefined) {
+      buff.write(HOME);
+      buff.write(`${ESC}37m`);
+      onAfterDraw(buff);
+    }
+
+    buff.write(RESET);
 
     await buff.flush();
   }

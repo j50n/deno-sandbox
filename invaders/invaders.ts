@@ -95,7 +95,7 @@ try {
     }
     lastFrameTime += FRAME_MS;
 
-    // const t1 = new Date().getTime();
+    const t1 = new Date().getTime();
 
     const canvas = termfoo.Canvas.initToCharDimensions(columns, rows);
 
@@ -114,11 +114,13 @@ try {
       alien.draw(canvas);
     }
 
-    await canvas.printDiff(oldCanvas);
-    // await canvas.print();
+    await canvas.printDiff(oldCanvas, (buff) => {
+      const t2 = new Date().getTime();
+      buff.write(`${t2 - t1}ms  `);
+    });
 
-    // const t2 = new Date().getTime();
-    // console.log(t2 - t1);
+    //const t2 = new Date().getTime();
+    //console.log(t2 - t1);
 
     oldCanvas = canvas;
     frameCount += 1;
