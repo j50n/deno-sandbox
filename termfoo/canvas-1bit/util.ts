@@ -44,15 +44,15 @@ export function uint32Array(n: number, value: number): Uint32Array {
 }
 
 export function concatUint8Arrays(...arr: Uint8Array[]): Uint8Array {
-  const totalLength = arr.map(a => a.length).reduce((a,b) => a+b, 0);
+  const totalLength = arr.map((a) => a.length).reduce((a, b) => a + b, 0);
 
   const result = new Uint8Array(totalLength);
 
   let current = 0;
-  for(const a of arr){
+  for (const a of arr) {
     result.set(a, current);
     current += a.length;
   }
 
   return result;
- }
+}

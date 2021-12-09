@@ -52,20 +52,18 @@ export function color8(r: number, g: number, b: number): number {
  * @param b Blue component; 0 to 255.
  * @returns The 24-bit color index.
  */
- export function color24(r: number, g: number, b: number): number {
-    if (r < 0 || r > 255) {
-      throw new Error("color24 r (red) must be between 0 and 255");
-    }
-  
-    if (g < 0 || g > 255) {
-      throw new Error("color24 g (green) must be between 0 and 255");
-    }
-  
-    if (b < 0 || b > 255) {
-      throw new Error("color24 b (blue) must be between 0 and 255");
-    }
-  
-    return (1 << 24) | (r << 16) | (g << 8) | b;
+export function color24(r: number, g: number, b: number): number {
+  if (r < 0 || r > 255) {
+    throw new Error("color24 r (red) must be between 0 and 255");
   }
 
-  
+  if (g < 0 || g > 255) {
+    throw new Error("color24 g (green) must be between 0 and 255");
+  }
+
+  if (b < 0 || b > 255) {
+    throw new Error("color24 b (blue) must be between 0 and 255");
+  }
+
+  return (1 << 24) | (r << 16) | (g << 8) | b;
+}

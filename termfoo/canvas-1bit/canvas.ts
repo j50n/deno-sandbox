@@ -4,11 +4,15 @@ import { HOME, RESET } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./lookup/squots.ts";
-import { concatUint8Arrays, makeDivisibleBy3, makeEven, uint32Array} from "./util.ts";
+import {
+  concatUint8Arrays,
+  makeDivisibleBy3,
+  makeEven,
+  uint32Array,
+} from "./util.ts";
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
 import { BLACK, WHITE } from "./color.ts";
 import { ESC } from "../ansiesc/common.ts";
-
 
 const bitvals = [1, 2, 4, 8, 16, 32];
 
@@ -19,9 +23,9 @@ const ANSI_24BIT_COLOR_BG_PREFIX = new TextEncoder().encode(`${ESC}48;2;`);
 const ANSI_SEP = new TextEncoder().encode(";");
 const ANSI_SUFFIX = new TextEncoder().encode("m");
 
-const ANSI_BYTE : Uint8Array[] = (()=>{
+const ANSI_BYTE: Uint8Array[] = (() => {
   const result = [];
-  for(let i=0; i<256; i++){
+  for (let i = 0; i < 256; i++) {
     result.push(new TextEncoder().encode(`${i}`));
   }
   return result;
@@ -50,40 +54,56 @@ class Printer {
 }
 
 function printFgColor(color: number): Uint8Array {
-  if(!Number.isInteger(color)){
+  if (!Number.isInteger(color)) {
     throw new Error("color must be an integer");
   }
 
   const hiByte = (color & 0xFF000000) >> 24;
-  if(hiByte === 0){
+  if (hiByte === 0) {
     const color8Index = color;
     return FG_COLOR[color8Index];
-  }else if(hiByte === 1){
+  } else if (hiByte === 1) {
     const r = (color & 0xFF0000) >> 16;
     const g = (color & 0xFF00) >> 8;
     const b = color & 0xFF;
 
-    return concatUint8Arrays(ANSI_24BIT_COLOR_FG_PREFIX, ANSI_BYTE[r], ANSI_SEP, ANSI_BYTE[g], ANSI_SEP, ANSI_BYTE[b], ANSI_SUFFIX);
+    return concatUint8Arrays(
+      ANSI_24BIT_COLOR_FG_PREFIX,
+      ANSI_BYTE[r],
+      ANSI_SEP,
+      ANSI_BYTE[g],
+      ANSI_SEP,
+      ANSI_BYTE[b],
+      ANSI_SUFFIX,
+    );
   } else {
     throw new Error("illegal color value");
   }
 }
 
 function printBgColor(color: number): Uint8Array {
-  if(!Number.isInteger(color)){
+  if (!Number.isInteger(color)) {
     throw new Error("color must be an integer");
   }
 
   const hiByte = (color & 0xFFFFFFFF) >> 24;
-  if(hiByte === 0){
+  if (hiByte === 0) {
     const color8Index = color;
     return BG_COLOR[color8Index];
-  }else if(hiByte === 1){
+  } else if (hiByte === 1) {
     const r = (color & 0xFF0000) >> 16;
     const g = (color & 0xFF00) >> 8;
     const b = color & 0xFF;
 
-    return concatUint8Arrays(ANSI_24BIT_COLOR_BG_PREFIX, ANSI_BYTE[r], ANSI_SEP, ANSI_BYTE[g], ANSI_SEP, ANSI_BYTE[b], ANSI_SUFFIX);
+    return concatUint8Arrays(
+      ANSI_24BIT_COLOR_BG_PREFIX,
+      ANSI_BYTE[r],
+      ANSI_SEP,
+      ANSI_BYTE[g],
+      ANSI_SEP,
+      ANSI_BYTE[b],
+      ANSI_SUFFIX,
+    );
   } else {
     throw new Error("illegal color value");
   }

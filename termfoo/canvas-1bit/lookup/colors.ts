@@ -5,12 +5,12 @@ import { ESC } from "../../ansiesc/common.ts";
  */
 export const FG_COLOR: readonly Uint8Array[] = (() => {
   const result: Uint8Array[] = [];
-  
-  for(let i = 0; i < 8; i++) {
+
+  for (let i = 0; i < 8; i++) {
     result.push(new TextEncoder().encode(`${ESC}${30 + i}m`));
   }
 
-  for(let i = 0; i< 8; i++) {
+  for (let i = 0; i < 8; i++) {
     result.push(new TextEncoder().encode(`${ESC}${90 + i}m`));
   }
 
@@ -27,11 +27,11 @@ export const FG_COLOR: readonly Uint8Array[] = (() => {
 export const BG_COLOR: readonly Uint8Array[] = (() => {
   const result: Uint8Array[] = [];
 
-  for(let i = 0; i < 8; i++) {
+  for (let i = 0; i < 8; i++) {
     result.push(new TextEncoder().encode(`${ESC}${40 + i}m`));
   }
 
-  for(let i = 0; i< 8; i++) {
+  for (let i = 0; i < 8; i++) {
     result.push(new TextEncoder().encode(`${ESC}${100 + i}m`));
   }
 
