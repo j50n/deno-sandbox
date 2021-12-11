@@ -1,4 +1,4 @@
-import { BLUE, color24, GREEN, RED } from "../../termfoo/mod.ts";
+import { BLUE, color24, RED } from "../../termfoo/mod.ts";
 import { termfoo } from "../deps.ts";
 
 export const ALIEN_A = [
@@ -11,7 +11,7 @@ export const ALIEN_A = [
     "...██..██...",
     "..██.██.██..",
     "██........██",
-  ], color24(34,212,94)),
+  ], color24(34, 212, 94)),
 
   termfoo.Sprite.init([
     "....████....",
@@ -22,7 +22,7 @@ export const ALIEN_A = [
     "..███..███..",
     ".██..██..██.",
     "..██....██..",
-  ], color24(34,212,94)),
+  ], color24(34, 212, 94)),
 ];
 
 export const ALIEN_B = [
