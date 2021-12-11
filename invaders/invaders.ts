@@ -47,12 +47,14 @@ class Alien {
 
 const aliens: Alien[] = [];
 
+const YOFF = 20;
+
 for (let i = 0; i < 11; i++) {
-  aliens.push(new Alien({ x: i * 20, y: 0 }, ALIEN_B));
-  aliens.push(new Alien({ x: i * 20, y: 12 }, ALIEN_C));
-  aliens.push(new Alien({ x: i * 20, y: 24 }, ALIEN_C));
-  aliens.push(new Alien({ x: i * 20, y: 36 }, ALIEN_A));
-  aliens.push(new Alien({ x: i * 20, y: 48 }, ALIEN_A));
+  aliens.push(new Alien({ x: i * 20, y: 0 + YOFF }, ALIEN_B));
+  aliens.push(new Alien({ x: i * 20, y: 12 + YOFF }, ALIEN_C));
+  aliens.push(new Alien({ x: i * 20, y: 24 + YOFF }, ALIEN_C));
+  aliens.push(new Alien({ x: i * 20, y: 36 + YOFF }, ALIEN_A));
+  aliens.push(new Alien({ x: i * 20, y: 48 + YOFF }, ALIEN_A));
 }
 
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
