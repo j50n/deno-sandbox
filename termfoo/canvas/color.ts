@@ -65,5 +65,5 @@ export function color24(r: number, g: number, b: number): number {
     throw new Error("color24 b (blue) must be between 0 and 255");
   }
 
-  return (1 << 24) | (r << 16) | (g << 8) | b;
+  return 0xFF000000 | (r << 16) | (g << 8) | b;
 }

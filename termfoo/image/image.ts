@@ -1,10 +1,16 @@
+import { uint32Array } from "../canvas/util.ts";
 import { Color, PixelReader, PixelWriter } from "./pixels.ts";
 
 export class Image implements PixelReader, PixelWriter {
-  readonly image: Uint32Array;
+  protected constructor(
+    public readonly width: number,
+    public readonly height: number,
+    public readonly image: Uint32Array,
+  ) {
+  }
 
-  constructor(public width: number, public height: number) {
-    this.image = new Uint32Array(width * height);
+  static init(width: number, height: number, color = 0xFF000000): Image {
+    return new Image(width, height, uint32Array(width * height, color));
   }
 
   private validPixel(x: number, y: number): boolean {
@@ -23,5 +29,9 @@ export class Image implements PixelReader, PixelWriter {
     if (this.validPixel(x, y)) {
       this.image[x + y * this.width] = color;
     }
+  }
+
+  clone(): Image {
+    return new Image(this.width, this.height, this.image.slice(0));
   }
 }

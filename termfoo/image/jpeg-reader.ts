@@ -32,6 +32,17 @@ export class JpegPixelReader implements PixelReader {
     return new JpegPixelReader(decode(raw));
   }
 
+  /**
+   * Read a JPEG image file into a pixel source.
+   * @param imageFile The image file.
+   * @returns A {@link PixelSource} of the image.
+   */
+  public static async initUrl(imageFile: string): Promise<JpegPixelReader> {
+    const response = await fetch(imageFile);
+    const data = await response.arrayBuffer();
+    return new JpegPixelReader(decode(new Uint8Array(data)));
+  }
+
   constructor(protected image: Image) {
   }
 }

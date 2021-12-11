@@ -5,7 +5,7 @@ import { termfoo } from "./deps.ts";
 
 const FRAME_MS = 1000 / 60;
 
-console.log(termfoo.HIDE_CURSOR);
+//console.log(termfoo.HIDE_CURSOR);
 
 class Alien {
   counter = 0;
@@ -56,8 +56,18 @@ for (let i = 0; i < 11; i++) {
 }
 
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
+
+const template = termfoo.Canvas.initToCharDimensions(columns, rows);
+const background = await termfoo.JpegPixelReader.initUrl(
+  "https://github.com/j50n/deno-sandbox/raw/21bfb7c70920c4b66ac6788db24f789e8fc5c312/termfoo/examples/resources/mountain.jpeg",
+);
+termfoo.scale(background, template.bg, { x: 0, y: 0 }, {
+  x: background.width,
+  y: background.height,
+});
+
 //let canvas = termfoo.Canvas.init(columns * 2, rows * 3);
-let oldCanvas = termfoo.Canvas.initToCharDimensions(columns, rows);
+let oldCanvas = template.clone(); //termfoo.Canvas.initToCharDimensions(columns, rows);
 oldCanvas.print();
 
 let lastFrameTime = new Date().getTime();
@@ -99,7 +109,7 @@ try {
 
     const t1 = new Date().getTime();
 
-    const canvas = termfoo.Canvas.initToCharDimensions(columns, rows);
+    const canvas = template.clone(); //termfoo.Canvas.initToCharDimensions(columns, rows);
 
     const index = frameCount % aliens.length;
     if (index === 0) {

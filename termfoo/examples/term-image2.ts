@@ -11,7 +11,7 @@ const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
 const buff = new TextBuffer(Deno.stdout);
 
 const reader = await JpegPixelReader.init("./resources/dragon.jpg");
-const image = new Image(columns, rows);
+const image = Image.init(columns, rows);
 
 scale(reader, image, { x: 0, y: 0 }, { x: reader.width, y: reader.height });
 

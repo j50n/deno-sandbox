@@ -34,22 +34,22 @@ export function color(
  * Alpha, or transparency value. This may or may not be supported in any particular context.
  */
 export function alpha(color: Color): ColorComp {
-  return (color & 0xFF000000) >> 24;
+  return (color >> 24) & 0xFF;
 }
 
 /** Red color component. */
 export function red(color: Color): ColorComp {
-  return (color & 0x00FF0000) >> 16;
+  return (color >> 16) & 0xFF;
 }
 
 /** Green color component. */
 export function green(color: Color): ColorComp {
-  return (color & 0x0000FF00) >> 8;
+  return (color >> 8) & 0xFF;
 }
 
 /** Blue color component. */
 export function blue(color: Color): ColorComp {
-  return color & 0x000000FF;
+  return color & 0xFF;
 }
 
 export type PixelReader = {

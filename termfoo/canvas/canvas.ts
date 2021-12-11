@@ -13,6 +13,7 @@ import {
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
 import { BLACK, WHITE } from "./color.ts";
 import { ESC } from "../ansiesc/common.ts";
+import { Image } from "../image/image.ts";
 
 const bitvals = [1, 2, 4, 8, 16, 32];
 
@@ -58,13 +59,13 @@ function printFgColor(color: number): Uint8Array {
     throw new Error("color must be an integer");
   }
 
-  const hiByte = (color & 0xFF000000) >> 24;
+  const hiByte = (color >> 24) & 0xFF;
   if (hiByte === 0) {
     const color8Index = color;
     return FG_COLOR[color8Index];
-  } else if (hiByte === 1) {
-    const r = (color & 0xFF0000) >> 16;
-    const g = (color & 0xFF00) >> 8;
+  } else if (hiByte === 0xFF) {
+    const r = (color >> 16) & 0xFF;
+    const g = (color >> 8) & 0xFF;
     const b = color & 0xFF;
 
     return concatUint8Arrays(
@@ -77,7 +78,7 @@ function printFgColor(color: number): Uint8Array {
       ANSI_SUFFIX,
     );
   } else {
-    throw new Error("illegal color value");
+    throw new Error(`illegal color value (hiByte=${hiByte})`);
   }
 }
 
@@ -86,13 +87,13 @@ function printBgColor(color: number): Uint8Array {
     throw new Error("color must be an integer");
   }
 
-  const hiByte = (color & 0xFFFFFFFF) >> 24;
+  const hiByte = (color >> 24) & 0xFF;
   if (hiByte === 0) {
     const color8Index = color;
     return BG_COLOR[color8Index];
-  } else if (hiByte === 1) {
-    const r = (color & 0xFF0000) >> 16;
-    const g = (color & 0xFF00) >> 8;
+  } else if (hiByte === 0xFF) {
+    const r = (color >> 16) & 0xFF;
+    const g = (color >> 8) & 0xFF;
     const b = color & 0xFF;
 
     return concatUint8Arrays(
@@ -131,7 +132,7 @@ export class Canvas {
     public readonly heightInPixels: number,
     protected readonly bitmap: Uint8Array,
     protected readonly fg: Uint32Array,
-    protected readonly bg: Uint32Array,
+    public readonly bg: Image,
   ) {
   }
 
@@ -169,7 +170,7 @@ export class Canvas {
       heightInPixels,
       new Uint8Array(arraySize),
       uint32Array(arraySize, fg),
-      uint32Array(arraySize, bg),
+      Image.init(widthInChars, heightInChars, bg),
     );
   }
 
@@ -209,7 +210,7 @@ export class Canvas {
       this.heightInPixels,
       this.bitmap.slice(0),
       this.fg.slice(0),
-      this.bg.slice(0),
+      this.bg.clone(),
     );
   }
 
@@ -225,7 +226,7 @@ export class Canvas {
       yield {
         squots: this.bitmap.slice(current, current + this.widthInChars),
         fgs: this.fg.slice(current, current + this.widthInChars),
-        bgs: this.bg.slice(current, current + this.widthInChars),
+        bgs: this.bg.image.slice(current, current + this.widthInChars),
       };
       current += this.widthInChars;
     }
@@ -346,7 +347,7 @@ export class Canvas {
 
   getPixelBgColor(x: number, y: number): number {
     const { addr } = this.pixelLoc(x, y);
-    return this.bg[addr];
+    return this.bg.image[addr];
   }
 
   /**
@@ -368,7 +369,7 @@ export class Canvas {
 
       const printer = new Printer(buff);
       for (let x = 0; x < this.widthInChars; x++) {
-        printer.print(this.fg[addr], this.bg[addr], this.bitmap[addr]);
+        printer.print(this.fg[addr], this.bg.image[addr], this.bitmap[addr]);
         addr += 1;
       }
     }
@@ -418,7 +419,7 @@ export class Canvas {
         if (
           ((bits === 0 && oldBits === 0) ||
             (bits === oldBits && this.fg[addr] === oldCanvas.fg[addr])) &&
-          this.bg[addr] === oldCanvas.bg[addr]
+          this.bg.image[addr] === oldCanvas.bg.image[addr]
         ) {
           printer = null;
         } else {
@@ -427,7 +428,7 @@ export class Canvas {
             buff.write(xPos(x + 1));
           }
 
-          printer.print(this.fg[addr], this.bg[addr], bits);
+          printer.print(this.fg[addr], this.bg.image[addr], bits);
         }
         addr += 1;
       }
