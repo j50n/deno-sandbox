@@ -10,7 +10,7 @@ limitations on terminal input. This demonstrates the ability to animate multiple
 objects in a terminal at 60 frames per second with plenty of room to spare.
 
 ```sh
-deno --unstable run https://raw.githubusercontent.com/j50n/deno-sandbox/main/invaders/invaders.ts
+deno --unstable run --allow-net=github.com,raw.githubusercontent.com https://raw.githubusercontent.com/j50n/deno-sandbox/main/invaders/invaders.ts
 ```
 
 **Note:** Deno applications are secure by default. See

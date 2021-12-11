@@ -59,7 +59,7 @@ const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
 
 const template = termfoo.Canvas.initToCharDimensions(columns, rows);
 const background = await termfoo.JpegPixelReader.initUrl(
-  "https://github.com/j50n/deno-sandbox/raw/21bfb7c70920c4b66ac6788db24f789e8fc5c312/termfoo/examples/resources/mountain.jpeg",
+  "https://github.com/j50n/deno-sandbox/raw/main/termfoo/examples/resources/spaceinvadersback.jpg",
 );
 termfoo.scale(background, template.bg, { x: 0, y: 0 }, {
   x: background.width,
