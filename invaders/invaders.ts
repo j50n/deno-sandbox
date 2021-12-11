@@ -2,6 +2,7 @@
 import { sleep } from "../util.ts";
 import { ALIEN_A, ALIEN_B, ALIEN_C } from "./sprites/aliens.ts";
 import { termfoo } from "./deps.ts";
+import { TextBuffer } from "../termfoo/mod.ts";
 
 const FRAME_MS = 1000 / 60;
 
@@ -42,9 +43,6 @@ class Alien {
   }
 }
 
-// const a = new Alien({x: 0, y: 0}, ALIEN_A);
-// const a = new Alien({x: 0, y: 0}, ALIEN_A);
-
 const aliens: Alien[] = [];
 
 const YOFF = 20;
@@ -68,7 +66,6 @@ termfoo.scale(background, template.bg, { x: 0, y: 0 }, {
   y: background.height,
 });
 
-//let canvas = termfoo.Canvas.init(columns * 2, rows * 3);
 let oldCanvas = template.clone(); //termfoo.Canvas.initToCharDimensions(columns, rows);
 oldCanvas.print();
 
@@ -111,7 +108,7 @@ try {
 
     const t1 = new Date().getTime();
 
-    const canvas = template.clone(); //termfoo.Canvas.initToCharDimensions(columns, rows);
+    const canvas = template.clone();
 
     const index = frameCount % aliens.length;
     if (index === 0) {
@@ -128,13 +125,15 @@ try {
       alien.draw(canvas);
     }
 
+    const b = new TextBuffer(Deno.stdout);
+    b.write(termfoo.HIDE_CURSOR);
+    await b.flush();
+
     await canvas.printDiff(oldCanvas, (buff) => {
+      buff.write(termfoo.SHOW_CURSOR);
       const t2 = new Date().getTime();
       buff.write(`${t2 - t1}ms  `);
     });
-
-    //const t2 = new Date().getTime();
-    //console.log(t2 - t1);
 
     oldCanvas = canvas;
     frameCount += 1;
@@ -142,34 +141,3 @@ try {
 } finally {
   console.log(termfoo.SHOW_CURSOR);
 }
-
-// for (let round = 0; round < 300; round++) {
-//   const t1 = new Date().getTime();
-//   oldCanvas = canvas.clone();
-//   canvas = termfoo.Canvas.init(columns * 2, rows * 3);
-
-//   if (round % 2 === 0) {
-//     canvas.writeSprite(round + 20, round, ALIEN_A[0]);
-//   } else {
-//     canvas.writeSprite(round + 20, round, ALIEN_A[1]);
-//   }
-
-//   if (round % 2 === 0) {
-//     canvas.writeSprite(round + 20, 150 - round, ALIEN_B[0]);
-//   } else {
-//     canvas.writeSprite(round + 20, 150 - round, ALIEN_B[1]);
-//   }
-
-//   if (round % 2 === 0) {
-//     canvas.writeSprite(round + 40, 50, ALIEN_C[0]);
-//   } else {
-//     canvas.writeSprite(round + 40, 50, ALIEN_C[1]);
-//   }
-
-//   await canvas.printDiff(oldCanvas);
-//   const t2 = new Date().getTime();
-
-//   //console.log(t2 - t);
-
-//   await sleep(100 - (t2 - t1));
-// }
