@@ -1,4 +1,5 @@
-#!/usr/bin/env -S deno run --unstable --quiet 
+#!/usr/bin/env -S deno run --unstable --quiet --reload --allow-net=github.com,raw.githubusercontent.com
+
 import { sleep } from "../util.ts";
 import { ALIEN_A, ALIEN_B, ALIEN_C } from "./sprites/aliens.ts";
 import { termfoo } from "./deps.ts";
@@ -57,16 +58,22 @@ for (let i = 0; i < 11; i++) {
 
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
 
-const template = termfoo.Canvas.initToCharDimensions(columns, rows);
-const background = await termfoo.JpegPixelReader.initUrl(
-  "https://github.com/j50n/deno-sandbox/raw/main/termfoo/examples/resources/spaceinvadersback.jpg",
-);
-termfoo.scale(background, template.bg, { x: 0, y: 0 }, {
-  x: background.width,
-  y: background.height,
-});
+const template = await (async () => {
+  const temp = termfoo.Canvas.initToCharDimensions(columns, rows);
 
-let oldCanvas = template.clone(); //termfoo.Canvas.initToCharDimensions(columns, rows);
+  const background = await termfoo.JpegPixelReader.initUrl(
+    "https://github.com/j50n/deno-sandbox/raw/main/termfoo/examples/resources/spaceinvadersback.jpg",
+  );
+
+  termfoo.scale(background, temp.bg, { x: 0, y: 0 }, {
+    x: background.width,
+    y: background.height,
+  });
+
+  return temp;
+})();
+
+let oldCanvas = template.clone();
 oldCanvas.print();
 
 let lastFrameTime = new Date().getTime();
