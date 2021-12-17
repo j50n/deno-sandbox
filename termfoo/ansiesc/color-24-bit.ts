@@ -1,4 +1,3 @@
-
 import { blue, Color, green, red } from "../image/pixels.ts";
 import { ESC } from "./common.ts";
 

@@ -1,3 +1,4 @@
+import { Color } from "../image/pixels.ts";
 import { Canvas } from "./canvas.ts";
 import { Rect } from "./rect.ts";
 
@@ -20,9 +21,9 @@ export class Sprite {
 
       for (let y = 0; y < canvas.heightInPixels; y++) {
         for (let x = 0; x < canvas.widthInPixels; x++) {
-          if (canvas.getPixel(r.x + x, r.y + y) !== 0) {
-            const fg = canvas.getPixelFgColor(r.x + x, r.y + y);
-            render.setPixel(dx + x, y + dy, fg);
+          if (canvas.fg.getPixel(r.x + x, r.y + y) !== 0) {
+            const fg = canvas.fg.getPixel(r.x + x, r.y + y);
+            render.fg.setPixel(dx + x, y + dy, fg);
           }
         }
       }
@@ -39,7 +40,7 @@ export class Sprite {
    * @param fg The foreground color applied to solid pixels.
    * @returns A canvas with an image created from the definition with the specified color.
    */
-  static init(def: string[], fg: number): Sprite {
+  static init(def: string[], fg: Color): Sprite {
     const canvas = Canvas.initToPixelDimensions(
       def.map((d) => d.length).reduce((a, b) => Math.max(a, b)),
       def.length,
@@ -53,7 +54,7 @@ export class Sprite {
       let x = 0;
       for (const d of dstr) {
         if (!BLANK_PIXELS.has(d)) {
-          canvas.setPixel(x, y, fg);
+          canvas.fg.setPixel(x, y, fg);
         }
         x += 1;
       }

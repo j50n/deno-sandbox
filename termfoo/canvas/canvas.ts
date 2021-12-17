@@ -4,18 +4,12 @@ import { HOME, RESET } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./lookup/squots.ts";
-import {
-  concatUint8Arrays,
-  makeDivisibleBy3,
-  makeEven,
-  uint32Array,
-} from "./util.ts";
+import { concatUint8Arrays, makeDivisibleBy3, makeEven } from "./util.ts";
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
 import { BLACK, WHITE } from "./color.ts";
 import { ESC } from "../ansiesc/common.ts";
 import { Image } from "../image/image.ts";
-
-const bitvals = [1, 2, 4, 8, 16, 32];
+import { SquotImage } from "../squots/squot-image.ts";
 
 type PrintCallbackFn = (buff: TextBuffer) => void;
 
@@ -121,8 +115,7 @@ export class Canvas {
    * @param heightInChars Height in characters.
    * @param widthInPixels Width in pixels (2 times {@link widthInChars}).
    * @param heightInPixels Height in pixels (3 times {@link heightInChars}).
-   * @param bitmap The bitmap.
-   * @param fg The foreground colors.
+   * @param fg The squot image.
    * @param bg The background colors.
    */
   protected constructor(
@@ -130,8 +123,7 @@ export class Canvas {
     public readonly heightInChars: number,
     public readonly widthInPixels: number,
     public readonly heightInPixels: number,
-    protected readonly bitmap: Uint8Array,
-    protected readonly fg: Uint32Array,
+    public readonly fg: SquotImage,
     public readonly bg: Image,
   ) {
   }
@@ -159,7 +151,6 @@ export class Canvas {
       throw new Error("canvas heightInChars must be a positive integer");
     }
 
-    const arraySize = widthInChars * heightInChars;
     const widthInPixels = widthInChars * 2;
     const heightInPixels = heightInChars * 3;
 
@@ -168,8 +159,7 @@ export class Canvas {
       heightInChars,
       widthInPixels,
       heightInPixels,
-      new Uint8Array(arraySize),
-      uint32Array(arraySize, fg),
+      SquotImage.init(widthInChars, heightInChars, fg),
       Image.init(widthInChars, heightInChars, bg),
     );
   }
@@ -208,8 +198,7 @@ export class Canvas {
       this.heightInChars,
       this.widthInPixels,
       this.heightInPixels,
-      this.bitmap.slice(0),
-      this.fg.slice(0),
+      this.fg.clone(),
       this.bg.clone(),
     );
   }
@@ -222,10 +211,10 @@ export class Canvas {
   > {
     let current = 0;
 
-    while (current < this.bitmap.length) {
+    while (current < this.fg.pixels.length) {
       yield {
-        squots: this.bitmap.slice(current, current + this.widthInChars),
-        fgs: this.fg.slice(current, current + this.widthInChars),
+        squots: this.fg.pixels.slice(current, current + this.widthInChars),
+        fgs: this.fg.colors.slice(current, current + this.widthInChars),
         bgs: this.bg.image.slice(current, current + this.widthInChars),
       };
       current += this.widthInChars;
@@ -245,15 +234,17 @@ export class Canvas {
     for (const { squots, fgs } of spriteImage.rows()) {
       if (ny >= 0 && ny < this.heightInPixels) {
         let nx = 2 * Math.floor(x / 2);
-        let addr = this.pixelAddr(nx, ny);
-
-        for (let i = 0; i < squots.length; i++) {
-          if (nx >= 0 && nx < this.widthInPixels) {
-            this.bitmap[addr] |= squots[i];
-            this.fg[addr] = fgs[i];
+        const loc = this.fg.location(nx, ny);
+        if (loc !== null) {
+          let addr = loc.addr;
+          for (let i = 0; i < squots.length; i++) {
+            if (nx >= 0 && nx < this.widthInPixels) {
+              this.fg.pixels[addr] |= squots[i];
+              this.fg.colors[addr] = fgs[i];
+            }
+            nx += 2;
+            addr += 1;
           }
-          nx += 2;
-          addr += 1;
         }
       }
       ny += 3;
@@ -275,79 +266,20 @@ export class Canvas {
     for (const { squots } of spriteImage.rows()) {
       if (ny >= 0 && ny < this.heightInPixels) {
         let nx = 2 * Math.floor(x / 2);
-        let addr = this.pixelAddr(nx, ny);
-
-        for (let i = 0; i < squots.length; i++) {
-          if (nx >= 0 && nx < this.widthInPixels) {
-            this.bitmap[addr] &= 0xF & ~squots[i];
+        const loc = this.fg.location(nx, ny); //this.pixelAddr(nx, ny);
+        if (loc !== null) {
+          let addr = loc.addr;
+          for (let i = 0; i < squots.length; i++) {
+            if (nx >= 0 && nx < this.widthInPixels) {
+              this.fg.pixels[addr] &= 0xF & ~squots[i];
+            }
+            nx += 2;
+            addr += 1;
           }
-          nx += 2;
-          addr += 1;
         }
       }
       ny += 3;
     }
-  }
-
-  /**
-   * The character address of a pixel.
-   *
-   * @param x The pixel X location.
-   * @param y The pixel Y location.
-   * @returns The character address.
-   */
-  protected pixelAddr(x: number, y: number): number {
-    const xpix = Math.floor(x / 2);
-    const ypix = Math.floor(y / 3);
-
-    return ypix * (this.widthInPixels / 2) + xpix;
-  }
-
-  /**
-   * The character address plus the bit location of a pixel.
-   *
-   * @param x The pixel X location.
-   * @param y The pixel Y location.
-   * @returns The character address.
-   */
-  protected pixelLoc(x: number, y: number): { addr: number; bit: number } {
-    if (x < 0 || x >= this.widthInPixels || y < 0 || y >= this.heightInPixels) {
-      throw new RangeError(`pixel range error: (${x}:${y})`);
-    }
-
-    const xsub = x % 2;
-    const ysub = y % 3;
-
-    return {
-      addr: this.pixelAddr(x, y),
-      bit: bitvals[xsub + ysub * 2],
-    };
-  }
-
-  setPixel(x: number, y: number, fg: number): void {
-    const { addr, bit } = this.pixelLoc(x, y);
-    this.bitmap[addr] |= bit;
-    this.fg[addr] = fg;
-  }
-
-  clearPixel(x: number, y: number): void {
-    const { addr, bit } = this.pixelLoc(x, y);
-    this.bitmap[addr] &= 0x0F & ~bit;
-  }
-
-  getPixel(x: number, y: number): number {
-    const { addr, bit } = this.pixelLoc(x, y);
-    return (this.bitmap[addr] & bit) === 0 ? 0 : 1;
-  }
-
-  getPixelFgColor(x: number, y: number): number {
-    const { addr } = this.pixelLoc(x, y);
-    return this.fg[addr];
-  }
-
-  getPixelBgColor(x: number, y: number): number {
-    const { addr } = this.pixelLoc(x, y);
-    return this.bg.image[addr];
   }
 
   /**
@@ -369,7 +301,11 @@ export class Canvas {
 
       const printer = new Printer(buff);
       for (let x = 0; x < this.widthInChars; x++) {
-        printer.print(this.fg[addr], this.bg.image[addr], this.bitmap[addr]);
+        printer.print(
+          this.fg.colors[addr],
+          this.bg.image[addr],
+          this.fg.pixels[addr],
+        );
         addr += 1;
       }
     }
@@ -413,12 +349,13 @@ export class Canvas {
 
       let printer: Printer | null = null;
       for (let x = 0; x < this.widthInChars; x++) {
-        const bits = this.bitmap[addr];
-        const oldBits = oldCanvas.bitmap[addr];
+        const bits = this.fg.pixels[addr];
+        const oldBits = oldCanvas.fg.pixels[addr];
 
         if (
           ((bits === 0 && oldBits === 0) ||
-            (bits === oldBits && this.fg[addr] === oldCanvas.fg[addr])) &&
+            (bits === oldBits &&
+              this.fg.colors[addr] === oldCanvas.fg.colors[addr])) &&
           this.bg.image[addr] === oldCanvas.bg.image[addr]
         ) {
           printer = null;
@@ -428,7 +365,7 @@ export class Canvas {
             buff.write(xPos(x + 1));
           }
 
-          printer.print(this.fg[addr], this.bg.image[addr], bits);
+          printer.print(this.fg.colors[addr], this.bg.image[addr], bits);
         }
         addr += 1;
       }

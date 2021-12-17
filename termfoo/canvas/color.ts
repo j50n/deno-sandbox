@@ -67,3 +67,8 @@ export function color24(r: number, g: number, b: number): number {
 
   return 0xFF000000 | (r << 16) | (g << 8) | b;
 }
+
+/**
+ * Special constant meaning to clear, or RESET the color.
+ */
+export const CLEAR = 0x00FFFFFF;
