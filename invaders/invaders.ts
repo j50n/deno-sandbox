@@ -103,7 +103,7 @@ const template = await (async () => {
 })();
 
 let oldCanvas = template.clone();
-oldCanvas.print();
+await oldCanvas.print();
 
 let lastFrameTime = new Date().getTime();
 let frameCount = 0;
