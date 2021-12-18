@@ -1,4 +1,4 @@
-#!/usr/bin/env -S deno run --unstable --quiet --reload --allow-net=github.com,raw.githubusercontent.com
+#!/usr/bin/env -S deno run --unstable --reload --allow-net=github.com,raw.githubusercontent.com
 
 import { sleep } from "../util.ts";
 import { ALIEN_A, ALIEN_B, ALIEN_C } from "./sprites/aliens.ts";
@@ -9,7 +9,7 @@ const FRAME_MS = 1000 / 60;
 
 //console.log(termfoo.HIDE_CURSOR);
 
-class Alien {
+abstract class Alien {
   counter = 0;
 
   constructor(
@@ -19,7 +19,7 @@ class Alien {
   }
 
   get width(): number {
-    return this.anim[0].renders[0].widthInPixels;
+    return this.anim[0].renders[0].width;
   }
 
   move(x: number, y: number): void {
@@ -27,20 +27,49 @@ class Alien {
     this.counter += 1;
   }
 
-  erase(canvas: termfoo.Canvas): void {
-    canvas.clearSprite(
+  draw(canvas: termfoo.Canvas): void {
+    this.anim[this.counter % this.anim.length].writeSprite(
+      canvas,
       this.pos.x,
       this.pos.y,
-      this.anim[this.counter % this.anim.length],
+      this.color,
     );
   }
 
-  draw(canvas: termfoo.Canvas): void {
-    canvas.writeSprite(
-      this.pos.x,
-      this.pos.y,
-      this.anim[this.counter % this.anim.length],
-    );
+  abstract get color(): number;
+}
+
+class WhiteAlien extends Alien {
+  get color(): number {
+    return 0xFFFFFFFF;
+  }
+}
+
+class BlueAlien extends Alien {
+  get color(): number {
+    return 0xFF2222FF;
+  }
+}
+
+class GreenAlien extends Alien {
+  get color(): number {
+    return 0xFF22FF22;
+  }
+}
+
+class RedAlien extends Alien {
+  get color(): number {
+    return 0xFFFF2222;
+  }
+}
+
+class SinAlien extends Alien {
+  get color(): number {
+    const wave = Math.sin((1 / 2) * new Date().getTime() * Math.PI / 360);
+    const normWave = (wave + 1) / 2;
+    const bright = Math.floor(127.99 * normWave) + 128;
+
+    return 0xFF000000 | (bright << 16) | (bright << 8) | bright;
   }
 }
 
@@ -49,11 +78,11 @@ const aliens: Alien[] = [];
 const YOFF = 20;
 
 for (let i = 0; i < 11; i++) {
-  aliens.push(new Alien({ x: i * 20, y: 0 + YOFF }, ALIEN_B));
-  aliens.push(new Alien({ x: i * 20, y: 12 + YOFF }, ALIEN_C));
-  aliens.push(new Alien({ x: i * 20, y: 24 + YOFF }, ALIEN_C));
-  aliens.push(new Alien({ x: i * 20, y: 36 + YOFF }, ALIEN_A));
-  aliens.push(new Alien({ x: i * 20, y: 48 + YOFF }, ALIEN_A));
+  aliens.push(new WhiteAlien({ x: i * 20, y: 0 + YOFF }, ALIEN_B));
+  aliens.push(new RedAlien({ x: i * 20, y: 12 + YOFF }, ALIEN_C));
+  aliens.push(new GreenAlien({ x: i * 20, y: 24 + YOFF }, ALIEN_C));
+  aliens.push(new BlueAlien({ x: i * 20, y: 36 + YOFF }, ALIEN_A));
+  aliens.push(new SinAlien({ x: i * 20, y: 48 + YOFF }, ALIEN_A));
 }
 
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);

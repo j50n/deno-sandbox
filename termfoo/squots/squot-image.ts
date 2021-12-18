@@ -1,5 +1,4 @@
 import { Color, PixelReader, PixelWriter } from "../image/pixels.ts";
-import { uint32Array } from "../canvas/util.ts";
 import { CLEAR } from "../canvas/color.ts";
 
 const bits = [1, 2, 4, 8, 16, 32];
@@ -36,7 +35,6 @@ export class SquotImage implements PixelReader, PixelWriter {
   static init(
     widthInChars: number,
     heightInChars: number,
-    color: Color = 0,
   ): SquotImage {
     const totalSizeInChars = widthInChars * heightInChars;
 
@@ -44,7 +42,7 @@ export class SquotImage implements PixelReader, PixelWriter {
       widthInChars,
       heightInChars,
       new Uint8Array(totalSizeInChars),
-      uint32Array(totalSizeInChars, color),
+      new Uint32Array(totalSizeInChars),
     );
   }
 
@@ -143,5 +141,36 @@ export class SquotImage implements PixelReader, PixelWriter {
       this.pixels.slice(0),
       this.colors.slice(0),
     );
+  }
+
+  /**
+   * Get the rows of this image.
+   */
+  *rows(): IterableIterator<
+    { squots: Uint8Array; fgs: Uint32Array }
+  > {
+    let current = 0;
+
+    while (current < this.pixels.length) {
+      yield {
+        squots: this.pixels.slice(current, current + this.widthInChars),
+        fgs: this.colors.slice(current, current + this.widthInChars),
+      };
+      current += this.widthInChars;
+    }
+  }
+
+  /**
+   * Get the rows of this image, but just the squots, ignoring the colors.
+   */
+  *squotRows(): IterableIterator<
+    Uint8Array
+  > {
+    let current = 0;
+
+    while (current < this.pixels.length) {
+      yield this.pixels.slice(current, current + this.widthInChars);
+      current += this.widthInChars;
+    }
   }
 }

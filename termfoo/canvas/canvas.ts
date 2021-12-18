@@ -1,8 +1,6 @@
-import { rem } from "../../util.ts";
 import { xPos } from "../ansiesc/control.ts";
 import { HOME, RESET } from "../ansiesc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
-import { Sprite } from "./sprite.ts";
 import { SQUOTS } from "./lookup/squots.ts";
 import { concatUint8Arrays, makeDivisibleBy3, makeEven } from "./util.ts";
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
@@ -140,7 +138,6 @@ export class Canvas {
   static initToCharDimensions(
     widthInChars: number,
     heightInChars: number,
-    fg = 7,
     bg = 0,
   ): Canvas {
     if (!Number.isInteger(widthInChars) || widthInChars < 1) {
@@ -159,7 +156,7 @@ export class Canvas {
       heightInChars,
       widthInPixels,
       heightInPixels,
-      SquotImage.init(widthInChars, heightInChars, fg),
+      SquotImage.init(widthInChars, heightInChars),
       Image.init(widthInChars, heightInChars, bg),
     );
   }
@@ -177,13 +174,11 @@ export class Canvas {
   static initToPixelDimensions(
     widthInPixels: number,
     heightInPixels: number,
-    fg = 7,
     bg = 0,
   ): Canvas {
     return this.initToCharDimensions(
       makeEven(widthInPixels) / 2,
       makeDivisibleBy3(heightInPixels) / 3,
-      fg,
       bg,
     );
   }
@@ -218,67 +213,6 @@ export class Canvas {
         bgs: this.bg.image.slice(current, current + this.widthInChars),
       };
       current += this.widthInChars;
-    }
-  }
-
-  /**
-   * Write the pixels of the sprite.
-   * @param x Upper left X. May go out of bounds.
-   * @param y Upper left Y. May go out of bounds.
-   * @param sprite The sprite to write.
-   */
-  writeSprite(x: number, y: number, sprite: Sprite): void {
-    const spriteImage = sprite.renders[rem(x, 2) + 2 * rem(y, 3)];
-
-    let ny = 3 * Math.floor(y / 3);
-    for (const { squots, fgs } of spriteImage.rows()) {
-      if (ny >= 0 && ny < this.heightInPixels) {
-        let nx = 2 * Math.floor(x / 2);
-        const loc = this.fg.location(nx, ny);
-        if (loc !== null) {
-          let addr = loc.addr;
-          for (let i = 0; i < squots.length; i++) {
-            if (nx >= 0 && nx < this.widthInPixels) {
-              this.fg.pixels[addr] |= squots[i];
-              this.fg.colors[addr] = fgs[i];
-            }
-            nx += 2;
-            addr += 1;
-          }
-        }
-      }
-      ny += 3;
-    }
-  }
-
-  /**
-   * Clear the pixels of the sprite. Unconditionally blanks all the pixels that are set in the sprite image.
-   * This does not change colors.
-   *
-   * @param x Upper left X. May go out of bounds.
-   * @param y Upper left Y. May go out of bounds.
-   * @param sprite The sprite to clear.
-   */
-  clearSprite(x: number, y: number, sprite: Sprite): void {
-    const spriteImage = sprite.renders[rem(x, 2) + 3 * rem(y, 3)];
-
-    let ny = 3 * Math.floor(y / 3);
-    for (const { squots } of spriteImage.rows()) {
-      if (ny >= 0 && ny < this.heightInPixels) {
-        let nx = 2 * Math.floor(x / 2);
-        const loc = this.fg.location(nx, ny); //this.pixelAddr(nx, ny);
-        if (loc !== null) {
-          let addr = loc.addr;
-          for (let i = 0; i < squots.length; i++) {
-            if (nx >= 0 && nx < this.widthInPixels) {
-              this.fg.pixels[addr] &= 0xF & ~squots[i];
-            }
-            nx += 2;
-            addr += 1;
-          }
-        }
-      }
-      ny += 3;
     }
   }
 

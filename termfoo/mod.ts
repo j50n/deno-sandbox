@@ -1,6 +1,5 @@
 export * from "./canvas/canvas.ts";
 export * from "./canvas/rect.ts";
-export * from "./canvas/sprite.ts";
 export * from "./canvas/lookup/squots.ts";
 export * from "./canvas/lookup/colors.ts";
 export * from "./canvas/color.ts";
@@ -18,3 +17,5 @@ export * from "./image/pixels.ts";
 export * from "./image/jpeg-reader.ts";
 export * from "./image/image.ts";
 export * from "./image/transforms/scale.ts";
+
+export * from "./sprites/sprite.ts";
