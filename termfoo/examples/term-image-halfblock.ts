@@ -1,7 +1,7 @@
 #!/usr/bin/env -S deno run --quiet --allow-read=./resources
 
-import { bg, fg } from "../ansiesc/color-24-bit.ts";
-import { RESET } from "../ansiesc/sgr.ts";
+import { bg, fg } from "../ansi-esc/color-24-bit.ts";
+import { RESET } from "../ansi-esc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { JpegPixelReader } from "../image/jpeg-reader.ts";
 import { Image } from "../image/image.ts";

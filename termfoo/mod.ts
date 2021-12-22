@@ -6,10 +6,10 @@ export * from "./canvas/color.ts";
 
 export * from "./text-buffer.ts";
 
-export * from "./ansiesc/color-24-bit.ts";
-export * from "./ansiesc/common.ts";
-export * from "./ansiesc/sgr.ts";
-export * from "./ansiesc/private.ts";
+export * from "./ansi-esc/color-24-bit.ts";
+export * from "./ansi-esc/common.ts";
+export * from "./ansi-esc/sgr.ts";
+export * from "./ansi-esc/private.ts";
 
 //export * from "./images/pixel-source.ts";
 

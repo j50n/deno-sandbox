@@ -1,4 +1,4 @@
-import { ESC } from "../../ansiesc/common.ts";
+import { ESC } from "../../ansi-esc/common.ts";
 
 /**
  * Lookup for foreground color ANSI escape codes, 8 bit color. 0 to 255.

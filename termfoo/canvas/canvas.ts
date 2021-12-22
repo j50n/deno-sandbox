@@ -1,11 +1,11 @@
-import { xPos } from "../ansiesc/control.ts";
-import { HOME, RESET } from "../ansiesc/sgr.ts";
+import { xPos } from "../ansi-esc/control.ts";
+import { HOME, RESET } from "../ansi-esc/sgr.ts";
 import { TextBuffer } from "../text-buffer.ts";
 import { SQUOTS } from "./lookup/squots.ts";
 import { concatUint8Arrays, makeDivisibleBy3, makeEven } from "./util.ts";
 import { BG_COLOR, FG_COLOR } from "./lookup/colors.ts";
 import { BLACK, WHITE } from "./color.ts";
-import { ESC } from "../ansiesc/common.ts";
+import { ESC } from "../ansi-esc/common.ts";
 import { Image } from "../image/image.ts";
 import { SquotImage } from "../squots/squot-image.ts";
 
@@ -222,10 +222,12 @@ export class Canvas {
    * This writes all squot values and colors, replacing everything. In most cases, {@link printDiff()}
    * is better for animation.
    */
-  async print(): Promise<void> {
+  async print(options?: { home?: boolean }): Promise<void> {
     const buff = new TextBuffer(Deno.stdout);
 
-    buff.write(HOME);
+    if (options?.home !== false) {
+      buff.write(HOME);
+    }
 
     let addr = 0;
     for (let y = 0; y < this.heightInChars; y++) {
@@ -242,6 +244,8 @@ export class Canvas {
         );
         addr += 1;
       }
+
+      buff.write(RESET);
     }
 
     await buff.flush();

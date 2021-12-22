@@ -117,19 +117,18 @@ export class SquotImage implements PixelReader, PixelWriter {
     x: number,
     y: number,
   ): { addr: number; bit: number } | null {
-    if (!Number.isInteger(x) || !Number.isInteger(y)) {
-      throw new Error("x,y values must be integers");
-    }
+    const xp = Math.floor(x);
+    const yp = Math.floor(y);
 
-    if (x < 0 || x >= this.width || y < 0 || y >= this.height) {
+    if (xp < 0 || xp >= this.width || yp < 0 || yp >= this.height) {
       return null;
     }
 
-    const xsub = x % 2;
-    const ysub = y % 3;
+    const xsub = xp % 2;
+    const ysub = yp % 3;
 
     return {
-      addr: this.pixelAddr(x, y),
+      addr: this.pixelAddr(xp, yp),
       bit: bits[xsub + ysub * 2],
     };
   }
