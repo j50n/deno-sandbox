@@ -8,7 +8,7 @@ import {
 } from "../sprites/ghosts.ts";
 
 Deno.test({ name: "show ghosts" }, async () => {
-  const canvas = termfoo.Canvas.initToCharDimensions(27,12);
+  const canvas = termfoo.Canvas.initToCharDimensions(27, 12);
 
   GHOST_RIGHT[0].writeSprite(canvas, 1, 1, 0xFFFF0000);
   GHOST_DOWN[0].writeSprite(canvas, 16, 1, 0xFFFFB8FF);
@@ -19,6 +19,6 @@ Deno.test({ name: "show ghosts" }, async () => {
   GHOST_POWER[0].writeSprite(canvas, 34, 16, 0xFFBBBBFF);
 
   console.log();
-  await canvas.print({home: false});
+  await canvas.print({ home: false });
   console.log();
 });

@@ -1,5 +1,4 @@
-export const world = 
-`XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+export const world = `XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 X............XX............X
 X.XXXX.XXXXX.XX.XXXXX.XXXX.X
 XoXXXX.XXXXX.XX.XXXXX.XXXXoX
@@ -12,9 +11,9 @@ XXXXXX.XXXXX+XX+XXXXX.XXXXXX
      X.XXXXX+XX+XXXXX.X
      X.XX++++++++++XX.X
      X.XX+XXX==XXX+XX.X
-XXXXXX.XX+X      X+XX.XXXXXX
-++++++.+++X      X+++.++++++
-XXXXXX.XX+X      X+XX.XXXXXX
+XXXXXX.XX+X------X+XX.XXXXXX
+++++++.+++X------X+++.++++++
+XXXXXX.XX+X------X+XX.XXXXXX
      X.XX+XXXXXXXX+XX.X
      X.XX++++++++++XX.X
      X.XX+XXXXXXXX+XX.X
@@ -29,4 +28,4 @@ X......XX....XX....XX......X
 X.XXXXXXXXXX.XX.XXXXXXXXXX.X
 X.XXXXXXXXXX.XX.XXXXXXXXXX.X
 X..........................X
-XXXXXXXXXXXXXXXXXXXXXXXXXXXX`;
+XXXXXXXXXXXXXXXXXXXXXXXXXXXX`.split("\n").map((line) => line.split(""));
