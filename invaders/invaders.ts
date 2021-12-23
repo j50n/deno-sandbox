@@ -2,19 +2,18 @@
 
 import { sleep } from "../util.ts";
 import { ALIEN_A, ALIEN_B, ALIEN_C } from "./sprites/aliens.ts";
-import { termfoo } from "./deps.ts";
-import { TextBuffer } from "../termfoo/mod.ts";
+import { ttyfu } from "./deps.ts";
 
 const FRAME_MS = 1000 / 60;
 
-//console.log(termfoo.HIDE_CURSOR);
+//console.log(ttyfu.HIDE_CURSOR);
 
 abstract class Alien {
   counter = 0;
 
   constructor(
     public pos: { x: number; y: number },
-    public anim: termfoo.Sprite[],
+    public anim: ttyfu.Sprite[],
   ) {
   }
 
@@ -27,7 +26,7 @@ abstract class Alien {
     this.counter += 1;
   }
 
-  draw(canvas: termfoo.Canvas): void {
+  draw(canvas: ttyfu.Canvas): void {
     this.anim[this.counter % this.anim.length].writeSprite(
       canvas,
       this.pos.x,
@@ -88,13 +87,13 @@ for (let i = 0; i < 11; i++) {
 const { columns, rows } = Deno.consoleSize(Deno.stdout.rid);
 
 const template = await (async () => {
-  const temp = termfoo.Canvas.initToCharDimensions(columns, rows);
+  const temp = ttyfu.Canvas.initToCharDimensions(columns, rows);
 
-  const background = await termfoo.JpegPixelReader.initUrl(
-    "https://github.com/j50n/deno-sandbox/raw/main/termfoo/examples/resources/spaceinvadersback.jpg",
+  const background = await ttyfu.JpegPixelReader.initUrl(
+    "https://github.com/j50n/deno-sandbox/raw/main/invaders/resources/spaceinvadersback.jpg",
   );
 
-  termfoo.scale(background, temp.bg, { x: 0, y: 0 }, {
+  ttyfu.scale(background, temp.bg, { x: 0, y: 0 }, {
     x: background.width,
     y: background.height,
   });
@@ -115,7 +114,7 @@ function sortAliens(): void {
   );
 }
 
-function atEdge(canvas: termfoo.Canvas): boolean {
+function atEdge(canvas: ttyfu.Canvas): boolean {
   for (const alien of aliens) {
     if (direction > 0) {
       if (alien.pos.x + alien.width >= canvas.widthInPixels) {
@@ -162,11 +161,11 @@ try {
     }
 
     const b = new TextBuffer(Deno.stdout);
-    b.write(termfoo.HIDE_CURSOR);
+    b.write(ttyfu.HIDE_CURSOR);
     await b.flush();
 
     await canvas.printDiff(oldCanvas, (buff) => {
-      buff.write(termfoo.SHOW_CURSOR);
+      buff.write(ttyfu.SHOW_CURSOR);
       const t2 = new Date().getTime();
       buff.write(`${t2 - t1}ms  `);
     });
@@ -175,5 +174,5 @@ try {
     frameCount += 1;
   }
 } finally {
-  console.log(termfoo.SHOW_CURSOR);
+  console.log(ttyfu.SHOW_CURSOR);
 }

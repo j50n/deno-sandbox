@@ -1,7 +1,7 @@
-import { termfoo } from "../deps.ts";
+import { ttyfu } from "../deps.ts";
 
 export const ALIEN_A = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "....████....",
     ".██████████.",
     "████████████",
@@ -12,7 +12,7 @@ export const ALIEN_A = [
     "██........██",
   ]),
 
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "....████....",
     ".██████████.",
     "████████████",
@@ -25,7 +25,7 @@ export const ALIEN_A = [
 ];
 
 export const ALIEN_B = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "...██...",
     "..████..",
     ".██████.",
@@ -36,7 +36,7 @@ export const ALIEN_B = [
     ".█....█.",
   ]),
 
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "...██...",
     "..████..",
     ".██████.",
@@ -49,7 +49,7 @@ export const ALIEN_B = [
 ];
 
 export const ALIEN_C = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "..█.....█..",
     "...█...█...",
     "..███████..",
@@ -60,7 +60,7 @@ export const ALIEN_C = [
     "...██.██...",
   ]),
 
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "..█.....█..",
     "█..█...█..█",
     "█.███████.█",
