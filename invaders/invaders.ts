@@ -160,7 +160,7 @@ try {
       alien.draw(canvas);
     }
 
-    const b = new TextBuffer(Deno.stdout);
+    const b = new ttyfu.TextBuffer(Deno.stdout);
     b.write(ttyfu.HIDE_CURSOR);
     await b.flush();
 
