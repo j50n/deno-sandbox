@@ -1,4 +1,4 @@
-import { Canvas } from "../../termfoo/mod.ts";
+import { ttyfu } from "../deps.ts";
 import { DOT, POWER_DOT, WALL } from "../sprites/board.ts";
 import { world } from "./world.ts";
 
@@ -11,7 +11,7 @@ const columns = world.map((row) => row.length).reduce(
 console.log(rows);
 console.log(columns);
 
-const canvas = Canvas.initToPixelDimensions(columns * 8, rows * 6);
+const canvas = ttyfu.Canvas.initToPixelDimensions(columns * 8, rows * 6);
 
 for (let y = 0; y < rows; y++) {
   for (let x = 0; x < columns; x++) {

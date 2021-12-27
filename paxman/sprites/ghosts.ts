@@ -1,4 +1,4 @@
-import { termfoo } from "../deps.ts";
+import { ttyfu } from "../deps.ts";
 import { mirror } from "./util.ts";
 
 const grd = [
@@ -17,15 +17,15 @@ const grd = [
 ];
 
 export const GHOST_RIGHT = [
-  termfoo.Sprite.init(grd),
+  ttyfu.Sprite.init(grd),
 ];
 
 export const GHOST_LEFT = [
-  termfoo.Sprite.init(mirror(grd)),
+  ttyfu.Sprite.init(mirror(grd)),
 ];
 
 export const GHOST_UP = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     ".....████.....",
     "...XX████XX...",
     "...XX.██.XX...",
@@ -42,7 +42,7 @@ export const GHOST_UP = [
 ];
 
 export const GHOST_DOWN = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     ".....████.....",
     "...████████...",
     "..██████████..",
@@ -59,7 +59,7 @@ export const GHOST_DOWN = [
 ];
 
 export const GHOST_POWER = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     ".....████.....",
     "...████████...",
     "..██████████..",

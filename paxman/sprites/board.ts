@@ -1,14 +1,14 @@
-import { termfoo } from "../deps.ts";
+import { ttyfu } from "../deps.ts";
 
 export const DOT = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "█",
     //"██",
   ]),
 ];
 
 export const POWER_DOT = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     ".██.",
     "████",
     "████",
@@ -17,7 +17,7 @@ export const POWER_DOT = [
 ];
 
 export const WALL = [
-  termfoo.Sprite.init([
+  ttyfu.Sprite.init([
     "█.█.█.█.",
     ".......█",
     "█.......",
