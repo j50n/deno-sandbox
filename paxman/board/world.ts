@@ -1,4 +1,4 @@
-export const world = `XXXXXXXXXXXXXXXXXXXXXXXXXXXX
+export const worldMap: string[][] = `XXXXXXXXXXXXXXXXXXXXXXXXXXXX
 X............XX............X
 X.XXXX.XXXXX.XX.XXXXX.XXXX.X
 XoXXXX.XXXXX.XX.XXXXX.XXXXoX
